@@ -34,3 +34,43 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+
+app/
+├── layout.tsx              # Root layout with shared UI
+├── page.tsx                # Homepage
+├── cars/                   # Car listings section
+│   ├── page.tsx            # All cars listing page
+│   ├── [id]/               # Dynamic route for individual car details
+│        └── page.tsx        # Individual car detail page
+│   
+├── sell-your-car/          # Section for sellers to list their vehicles
+│   └── page.tsx            # Form/process to sell a car
+├                    # Car buying guides and process
+│   
+├── dealers/                # Dealers directory
+│   ├── page.tsx            # All dealers listing
+│   └── [id]/               # Individual dealer profiles
+│       └── page.tsx        # Dealer detail page
+├
+│  
+├── services/               # Additional services (inspection, etc.)
+│   └── page.tsx            # Services overview page
+├── about/                  # About company
+│   └── page.tsx            # About us page
+├── faq/                    # FAQ section
+│   └── page.tsx            # Frequently asked questions
+├── contact/                # Contact information
+│   └── page.tsx            # Contact form and details
+├── blog/                   # Car-related content and articles
+│   ├── page.tsx            # Blog listing page
+│   └── [slug]/             # Individual blog posts
+│       └── page.tsx        # Blog post page
+└── account/                # User account section
+    ├── page.tsx            # Account dashboard
+    ├── saved-cars/         # User's saved/favorite cars
+    │   └── page.tsx        # Saved cars listing
+    ├── listings/           # User's car listings (if they're selling)
+    │   └── page.tsx        # User's listings management
+    └── settings/           # Account settings
+        └── page.tsx        # User profile settings
