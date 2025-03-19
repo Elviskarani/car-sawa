@@ -46,7 +46,7 @@ app/
 │   
 ├── sell-your-car/          # Section for sellers to list their vehicles
 │   └── page.tsx            # Form/process to sell a car
-├                    # Car buying guides and process
+├                    
 │   
 ├── dealers/                # Dealers directory
 │   ├── page.tsx            # All dealers listing

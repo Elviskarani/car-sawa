@@ -3,10 +3,12 @@ import React from 'react';
 import Image from 'next/image';
 import { FiPhone } from 'react-icons/fi';
 
+import BuyCarDropdown from '../components/BuyCarDropdown';
+
 
 const Header = () => {
   return (
-    <header className="bg-white shadow-sm">
+    <header className="bg-[#DEDCD9] shadow-sm">
       <div className="max-w-12xl mx-auto px-4 sm:px-6 lg:px-4">
         <div className="flex justify-between items-center py-4">
           {/* Logo */}
@@ -19,12 +21,7 @@ const Header = () => {
           {/* Navigation */}
           <nav className="hidden md:flex items-center space-x-3">
             <div className="relative group">
-              <button className="flex items-center text-gray-700 hover:text-gray-900 font-bold"> 
-                Buy Car
-                <svg className="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </button>
+              <BuyCarDropdown />
             </div>
             <div className="relative group">
               <button className="flex items-center text-gray-700 hover:text-gray-900 font-bold"> 
