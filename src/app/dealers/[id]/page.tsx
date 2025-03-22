@@ -1,11 +1,31 @@
-// app/dealers/[id]/page.tsx
+
 import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
-// Mock database of dealers
-const dealersData = [
+
+interface Dealer {
+  id: string;
+  imageSrc: string;
+  name: string;
+  location: string;
+  contactNumber: string;
+  email: string;
+  description: string;
+  openingHours: string;
+  services: string[];
+}
+
+interface PageParams {
+  params: {
+    id: string;
+  };
+}
+
+
+
+const dealersData: Dealer[] = [
   { 
     id: 'essence-auto',
     imageSrc: '/essence.webp', 
@@ -41,20 +61,20 @@ const dealersData = [
   }
 ];
 
-// This function generates all possible paths for static generation
-export async function generateStaticParams() {
+
+export function generateStaticParams() {
   return dealersData.map((dealer) => ({
     id: dealer.id,
   }));
 }
 
-export default function DealerPage({ params }) {
+export default function DealerPage({ params }: PageParams): React.ReactNode {
   const { id } = params;
   
-  // Find the dealer with the matching ID
+ 
   const dealer = dealersData.find(dealer => dealer.id === id);
   
-  // If no dealer is found, show 404 page
+  
   if (!dealer) {
     notFound();
   }
@@ -89,12 +109,12 @@ export default function DealerPage({ params }) {
             </div>
             
         {/* Dealer Information */}
-        <div className="bg-white rounded-lg shadow-md p-5 mt-3 mb-8">
+        <div className="bg-white rounded-lg lg:px-30 md:px-10 shadow-md p-4 mt-3 mb-8">
           <div className="flex flex-col md:flex-row md:justify-between mb-4">
 
             
             {/* Location and Contact */}
-            <div className="mb-4 md:mb-0">
+            <div className="mb-4 lg:mb-0">
               <h2 className="text-xl font-semibold mb-2">Contact Information</h2>
               <div className="flex items-start mb-2">
                 <svg className="w-5 h-5 text-[#272D3C] mt-1 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
