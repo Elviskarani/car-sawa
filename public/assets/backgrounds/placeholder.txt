@@ -1,0 +1,10 @@
+Please add the following background image:
+
+1. hero-bg.jpg - Hero section background image
+
+Image requirements:
+- High quality, professional photo
+- Represents Kenyan automotive market/landscape
+- Works well as a hero section background (good contrast for text overlay)
+- Optimized for web (recommended size: 1920x1080px)
+- Properly licensed
