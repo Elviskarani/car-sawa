@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { cars, type Car } from '@/app/data/cars';
+import { cars, type Car } from "@/app/data/cars";
 
 function Cars() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -64,7 +64,9 @@ function Cars() {
       <div className="bg-[#272D3C] text-white py-6">
         <div className="container mx-auto px-4">
           <h1 className="text-3xl font-bold mb-2">Find Your Perfect Car</h1>
-          <p className="text-gray-300">Browse through our extensive collection of quality vehicles</p>
+          <p className="text-gray-300">
+            Browse through our extensive collection of quality vehicles
+          </p>
         </div>
       </div>
 
@@ -157,7 +159,9 @@ function Cars() {
               {showAdvancedSearch && (
                 <div className="space-y-4 pt-4">
                   <div>
-                    <h3 className="font-semibold mb-2 text-[#272D3C]">Brand & Model</h3>
+                    <h3 className="font-semibold mb-2 text-[#272D3C]">
+                      Brand & Model
+                    </h3>
                     <select
                       className="w-full px-4 py-2 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-[#c1ff72] focus:ring-0"
                       value={selectedBrand}
@@ -173,7 +177,9 @@ function Cars() {
                   </div>
 
                   <div>
-                    <h3 className="font-semibold mb-2 text-[#272D3C]">Year of Manufacture</h3>
+                    <h3 className="font-semibold mb-2 text-[#272D3C]">
+                      Year of Manufacture
+                    </h3>
                     <div className="grid grid-cols-2 gap-2">
                       <input
                         type="text"
@@ -193,7 +199,9 @@ function Cars() {
                   </div>
 
                   <div>
-                    <h3 className="font-semibold mb-2 text-[#272D3C]">Price & Currency</h3>
+                    <h3 className="font-semibold mb-2 text-[#272D3C]">
+                      Price & Currency
+                    </h3>
                     <div className="grid grid-cols-2 gap-2 mb-2">
                       <input
                         type="text"
@@ -275,7 +283,8 @@ function Cars() {
                           </p>
                           {car.leasePrice && (
                             <p className="text-sm text-gray-600">
-                              Lease from KES {car.leasePrice.toLocaleString()}/mo
+                              Lease from KES {car.leasePrice.toLocaleString()}
+                              /mo
                             </p>
                           )}
                         </div>
