@@ -6,8 +6,9 @@ import Link from "next/link";
 import { cars, type Car } from "@/app/data/cars";
 import { notFound } from "next/navigation";
 
-export default function CarDetails({ params }: { params: { id: string } }) {
-  const car = cars.find((c) => c.id === params.id);
+export default function CarDetails({ params }: { params: Promise<{ id: string }> }) {
+  const resolvedParams = React.use(params);
+  const car = cars.find((c) => c.id === resolvedParams.id);
 
   if (!car) {
     notFound();
