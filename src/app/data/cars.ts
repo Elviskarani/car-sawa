@@ -45,7 +45,7 @@ export const cars: Car[] = [
       online: true,
       lastSeen: "Active now"
     },
-    imageUrl: "/assets/cars/2024toyotalandcruiser.jpeg",
+    imageUrl: "/2024toyotalandcruiser.jpeg",
     status: "AVAILABLE",
     features: [
       "Multi-Terrain Select",

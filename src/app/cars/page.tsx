@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { cars, type Car } from "@/app/data/cars";
+import CarCard from "@/components/carcard";
 
 function Cars() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -241,67 +242,19 @@ function Cars() {
           <div className="lg:w-3/4">
             <div className="grid grid-cols-1 lg:px-30 px-4 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredCars.map((car) => (
-                <Link href={`/cars/${car.id}`} key={car.id} className="group">
-                  <div className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
-                    <div className="relative w-full pb-[56.25%]">
-                      <Image
-                        src={car.imageUrl}
-                        alt={`${car.year} ${car.make} ${car.model}`}
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                        fill
-                        className="object-cover"
-                      />
-                    </div>
-                    <div className="p-4">
-                      <div className="flex justify-between items-start mb-2">
-                        <h3 className="font-semibold text-lg text-[#272D3C] group-hover:text-[#1a1a1a]">
-                          {car.year} {car.make} {car.model}
-                        </h3>
-                        <span
-                          className={`px-2 py-1 rounded-full text-xs font-medium ${
-                            car.status === "AVAILABLE"
-                              ? "bg-[#c1ff72] text-[#1a1a1a]"
-                              : "bg-red-100 text-red-800"
-                          }`}
-                        >
-                          {car.status}
-                        </span>
-                      </div>
-                      <p className="text-gray-600 text-sm mb-3">
-                        {car.engineSize} • {car.transmission}
-                      </p>
-                      <div className="flex justify-between items-end">
-
-                        <div className="flex items-center">
-                          <div className="relative w-8 h-8">
-                            <Image
-                              src={car.dealer.profileImage}
-                              alt={car.dealer.name}
-                              fill
-                              className="rounded-full object-cover border border-[#c1ff72]"
-                            />
-                            {car.dealer.verified && (
-                              <div className="absolute -right-1 -bottom-1 bg-[#c1ff72] rounded-full p-0.5">
-                                <svg
-                                  className="w-3 h-3 text-[#1a1a1a]"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  viewBox="0 0 24 24"
-                                >
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M5 13l4 4L19 7"
-                                  />
-                                </svg>
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                <Link href={`/cars/${car.id}`} key={car.id}>
+                  <CarCard
+                    carImageSrc={car.imageUrl}
+                    carName={`${car.make} ${car.model}`}
+                    price={(car.price).toLocaleString()}
+                    carPageUrl={`/cars/${car.id}`}
+                    year={car.year.toString()}
+                    mileage={car.mileage ? car.mileage.toLocaleString() : '0'}
+                    transmission={car.transmission}
+                    fuelType={car.fuelType || 'Petrol'}
+                    engineSize={car.engineSize}
+                    status="Available"
+                  />
                 </Link>
               ))}
             </div>
