@@ -1,0 +1,11 @@
+Please add the following dealer images here:
+
+1. premium-motors.jpg - Premium Motors dealership logo/storefront
+2. autoxpress.jpg - AutoXpress dealership logo/storefront
+3. car-city.jpg - Car City dealership logo/storefront
+
+Images should be:
+- Professional dealership logos or storefront photos
+- Optimized for web (logos: 200x200px, storefronts: 800x600px)
+- Representative of actual Kenyan dealerships
+- Properly licensed/authorized for use

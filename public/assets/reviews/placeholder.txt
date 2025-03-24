@@ -1,0 +1,12 @@
+Please add the following review images here:
+
+1. landcruiser-review.jpg - Toyota Land Cruiser review photo
+2. vitara-review.jpg - Suzuki Vitara review photo
+3. hilux-review.jpg - Toyota Hilux review photo
+
+Images should be:
+- High quality car review photos
+- Context-appropriate for Kenyan market
+- Show cars in real-world usage
+- Optimized for web (recommended size: 800x600px)
+- Properly licensed

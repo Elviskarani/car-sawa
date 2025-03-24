@@ -1,0 +1,111 @@
+import CarCard from "@/components/carcard";
+
+// Define the car data type with proper literal types
+type CarData = {
+  imageSrc: string;
+  name: string;
+  price: string;
+  pageUrl: string;
+  year?: string;
+  mileage?: string;
+  transmission?: string;
+  fuelType?: string;
+  engineSize?: string;
+  status?: 'Available' | 'sold';
+}
+
+export default function UsedCarsPage() {
+    // Car data with the defined type and new properties
+    const cars: CarData[] = [
+      { 
+        imageSrc: '/2024toyotalandcruiser.jpeg', 
+        name: 'Toyota Land Cruiser', 
+        price: '10,000,000', 
+        pageUrl: '/cars/2024-toyota-land-cruiser',
+        year: '2023',
+        mileage: '12,500',
+        transmission: 'Automatic',
+        fuelType: 'Diesel',
+        engineSize: '3.0 L',
+        status: 'Available',
+      },
+      { 
+        imageSrc: '/bmwx5.jpg', 
+        name: 'BMW X5', 
+        price: '7,000,000', 
+        pageUrl: '/cars/2024-bmw-x5',
+        year: '2022',
+        mileage: '28,600',
+        transmission: 'Automatic',
+        fuelType: 'Petrol',
+        engineSize: '3.0 L',
+        status: 'Available',
+      },
+      { 
+        imageSrc: '/suzukivitara.jpg', 
+        name: 'Suzuki Vitara', 
+        price: '8,000,000', 
+        pageUrl: '/cars/2024-suzuki-vitara',
+        year: '2023',
+        mileage: '15,200',
+        transmission: 'Manual',
+        fuelType: 'Petrol',
+        engineSize: '1.6 L',
+        status: 'Available',
+      },
+     
+      { 
+        imageSrc: '/toyotahilux.jpeg', 
+        name: 'Toyota Hilux', 
+        price: '700,000', 
+        pageUrl: '/cars/2024-toyota-hilux',
+        year: '2022',
+        mileage: '42,300',
+        transmission: 'Manual',
+        fuelType: 'Diesel',
+        engineSize: '2.8 L',
+        status: 'sold',
+      },
+      { 
+        imageSrc: '/mercedes.jpg', 
+        name: 'Mercedes Benz', 
+        price: '600,000', 
+        pageUrl: '/cars/2024-mercedes-benz',
+        year: '2021',
+        mileage: '55,200',
+        transmission: 'Automatic',
+        fuelType: 'Petrol',
+        engineSize: '2.0 L',
+        status: 'sold',
+      }
+    ];
+
+    return (
+        <div className="w-full bg-[#DEDCD9] py-5 px-3 md:py-12 md:px-8">
+            <div className="container mx-auto">
+                <h1 className="text-xl md:text-4xl font-bold mb-2 text-gray-800">Used Cars</h1>
+                <p className="text-sm text-gray-700 mb-8 max-w-3xl">
+                    Browse our selection of pre-owned vehicles available for sale. Find the perfect car that matches your needs and budget.
+                </p>
+            </div>
+
+            <div className="grid grid-cols-1 lg:px-30 px-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+               {cars.map((car, index) => (
+                <CarCard
+                  key={index}
+                  carImageSrc={car.imageSrc}
+                  carName={car.name}
+                  price={car.price}
+                  carPageUrl={car.pageUrl}
+                  year={car.year}
+                  mileage={car.mileage}
+                  transmission={car.transmission}
+                  fuelType={car.fuelType}
+                  engineSize={car.engineSize}
+                  status={car.status}
+                />
+               ))}
+            </div>
+        </div>
+    );
+}

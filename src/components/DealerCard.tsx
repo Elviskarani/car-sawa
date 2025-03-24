@@ -1,8 +1,12 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
+interface ArrowIconProps {
+  className?: string;
+}
+
 // ArrowIcon component for the clickable navigation arrow
-const ArrowIcon = ({ className }) => (
+const ArrowIcon = ({ className }: ArrowIconProps) => (
   <div className={`${className} flex items-center justify-center rounded-full bg-[#272D3C] p-1`}>
     <svg 
       fill="none" 
@@ -16,16 +20,24 @@ const ArrowIcon = ({ className }) => (
   </div>
 );
 
+// Define interface for DealerCard props
+interface DealerCardProps {
+  dealerImageSrc: string;
+  dealershipName: string;
+  location: string;
+  dealershipPageUrl: string;
+}
+
 // DealerCard component
-const DealerCard = ({ dealerImageSrc, dealershipName, location, dealershipPageUrl }) => {
+const DealerCard = ({ dealerImageSrc, dealershipName, location, dealershipPageUrl }: DealerCardProps) => {
   // Extract the dealer ID from the URL or use a formatted version of the name
   const dealerId = dealershipPageUrl.split('/').pop() || 
                   dealershipName.toLowerCase().replace(/\s+/g, '-');
   
   return (
-    <div className="bg-white shadow-md hover:shadow-lg transition-shadow duration-300 rounded-lg overflow-hidden">
+    <div className="bg-white shadow-lg hover:shadow-lg transition-shadow duration-300 rounded-2xl overflow-hidden">
       {/* Image container with 16:9 aspect ratio */}
-      <div className="relative w-full pb-[56.25%]">
+      <div className="relative bg-white w-full pb-[56.25%]">
         <Image
           src={dealerImageSrc}
           alt={`${dealershipName} dealership`}

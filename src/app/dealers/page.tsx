@@ -38,12 +38,15 @@ export default function DealersPage() {
   ];
 
   return (
-    <div className="w-full bg-[#DEDCD9] py-5 px-3 md:py-12 md:px-8">
-      <div className="container mx-auto">
+    <div className="w-full bg-[#DEDCD9] text-gray-800 py-5 px-3 md:py-12 md:px-8">
+      <div className="container  mx-auto">
+        
+       
         <h1 className="text-xl md:text-4xl font-bold mb-2 text-gray-800">All Dealers</h1>
         <p className="text-sm text-gray-700 mb-8 max-w-3xl">
           Browse all our partnered dealerships in your area. Find the perfect CarSawa partner dealership that offers exceptional service and the best selection of vehicles.
         </p>
+       
         
   
         

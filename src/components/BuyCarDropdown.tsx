@@ -25,7 +25,7 @@ const BuyCarDropdown = () => {
   return (
     <div className="relative" ref={dropdownRef}>
       <button 
-        className="flex items-center text-gray-700 hover:text-gray-900 font-bold"
+        className="flex items-center text-white hover:text-white font-bold"
         onClick={() => setIsOpen(!isOpen)}
         aria-expanded={isOpen}
         aria-haspopup="true"
@@ -46,25 +46,25 @@ const BuyCarDropdown = () => {
         <div className="absolute z-10 mt-2 w-56 bg-white rounded-md shadow-lg py-1 ring-1 ring-black ring-opacity-5">
           <Link 
             href="/dealers" 
-            className="block px-4 py-2 text-sm text-gray-700 hover:bg-[#c1ff72] hover:text-[#272D3C]"
+            className="block px-4 py-2 text-sm text-white hover:bg-[#c1ff72] hover:text-[#272D3C]"
           >
             View All Dealers
           </Link>
           <Link 
             href="/cars" 
-            className="block px-4 py-2 text-sm text-gray-700 hover:bg-[#c1ff72] hover:text-[#272D3C]"
+            className="block px-4 py-2 text-sm text-white hover:bg-[#c1ff72] hover:text-[#272D3C]"
           >
             Browse New Cars
           </Link>
           <Link 
             href="/used-cars" 
-            className="block px-4 py-2 text-sm text-gray-700 hover:bg-[#c1ff72] hover:text-[#272D3C]"
+            className="block px-4 py-2 text-sm text-white hover:bg-[#c1ff72] hover:text-[#272D3C]"
           >
             Browse Used Cars
           </Link>
           <Link 
             href="/cars/compare" 
-            className="block px-4 py-2 text-sm text-gray-700 hover:bg-[#c1ff72] hover:text-[#272D3C]"
+            className="block px-4 py-2 text-sm text-white hover:bg-[#c1ff72] hover:text-[#272D3C]"
           >
             Compare Models
           </Link>
