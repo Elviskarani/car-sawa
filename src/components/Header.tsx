@@ -6,8 +6,8 @@ import Link from 'next/link';
 import React, { useState } from 'react';
 import Image from 'next/image';
 import { FiPhone } from 'react-icons/fi';
+import { FiUser } from 'react-icons/fi';
 
-import BuyCarDropdown from '../components/BuyCarDropdown';
 import LoginModal from '../components/LoginModal';
 
 const Header = () => {
@@ -33,7 +33,27 @@ const Header = () => {
 
           {/* Navigation */}
           <nav className="hidden md:flex items-center space-x-3">
-            <BuyCarDropdown />
+        
+            <div className="relative group"
+                 onMouseEnter={() => setActiveDropdown('Buy')}
+                 onMouseLeave={() => setActiveDropdown(null)}>
+              <button 
+                className="flex items-center text-white hover:text-white font-bold"
+              > 
+                Buy Car
+                <svg className={`ml-1 w-4 h-4 transform ${activeDropdown === 'Buy' ? 'rotate-180' : ''} transition-transform duration-200`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+              <div className={`absolute z-50 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 transition-all duration-200 ${activeDropdown === 'Buy' ? 'opacity-100 visible' : 'opacity-0 invisible'}`}>
+                <Link href="/cars" className="block px-4 py-2 text-[#272D3C] hover:font-bold hover:underline">
+                  Browse new Cars
+                </Link>
+                <Link href="/used-cars" className="block px-4 py-2 text-[#272D3C] hover:font-bold hover:underline">
+                  Browse used Cars
+                </Link>
+              </div>
+            </div>
             <div className="relative group"
                  onMouseEnter={() => setActiveDropdown('sell')}
                  onMouseLeave={() => setActiveDropdown(null)}>
@@ -49,7 +69,7 @@ const Header = () => {
                 <Link href="/sell-your-car" className="block px-4 py-2 text-[#272D3C] hover:font-bold hover:underline">
                   List Your Car
                 </Link>
-                <Link href="/value" className="block px-4 py-2 text-[#272D3C] hover:bg-[#c1ff72] hover:text-[#1a1a1a]">
+                <Link href="/value" className="block px-4 py-2 text-[#272D3C] hover:font-bold hover:underline">
                   Value Your Car
                 </Link>
               </div>
@@ -66,13 +86,13 @@ const Header = () => {
                 </svg>
               </button>
               <div className={`absolute z-50 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 transition-all duration-200 ${activeDropdown === 'services' ? 'opacity-100 visible' : 'opacity-0 invisible'}`}>
-                <Link href="/insurance" className="block px-4 py-2 text-white hover:bg-[#c1ff72] hover:text-[#1a1a1a]">
+                <Link href="/insurance" className="block px-4 py-2 text-[#272D3C] hover:font-bold hover:underline">
                   Car Insurance
                 </Link>
-                <Link href="/finance" className="block px-4 py-2 text-white hover:bg-[#c1ff72] hover:text-[#1a1a1a]">
+                <Link href="/finance" className="block px-4 py-2 text-[#272D3C] hover:font-bold hover:underline">
                   Car Finance
                 </Link>
-                <Link href="/inspection" className="block px-4 py-2 text-white hover:bg-[#c1ff72] hover:text-[#1a1a1a]">
+                <Link href="/inspection" className="block px-4 py-2 text-[#272D3C] hover:font-bold hover:underline">
                   Car Inspection
                 </Link>
               </div>
@@ -100,10 +120,12 @@ const Header = () => {
                 +254791001601
               </Link>
               <button 
-                onClick={() => setShowLoginModal(true)} 
-                className="flex items-center text-white hover:text-white font-bold"
-              > 
-                Sign Up/Login
+               onClick={() => setShowLoginModal(true)} 
+               className="flex items-center text-white hover:text-white font-bold"
+               aria-label="Sign Up or Login"
+             >
+               <FiUser className="block md:hidden" aria-hidden="true" />
+               <span className="hidden md:block">Sign Up/Login</span>
               </button>
             </div>
 

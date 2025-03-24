@@ -1,6 +1,8 @@
-import CarCard from "@/components/carcard";
 
-// Define the car data type with proper literal types
+
+import CarCard from "@/components/carcard";
+import CarFilter from "@/components/CarFilter";
+
 type CarData = {
   imageSrc: string;
   name: string;
@@ -13,6 +15,8 @@ type CarData = {
   engineSize?: string;
   status?: 'Available' | 'sold';
 }
+
+
 
 export default function UsedCarsPage() {
     // Car data with the defined type and new properties
@@ -77,8 +81,11 @@ export default function UsedCarsPage() {
         fuelType: 'Petrol',
         engineSize: '2.0 L',
         status: 'sold',
-      }
+      },
+      
     ];
+
+   
 
     return (
         <div className="w-full bg-[#DEDCD9] py-5 px-3 md:py-12 md:px-8">
@@ -88,8 +95,17 @@ export default function UsedCarsPage() {
                     Browse our selection of pre-owned vehicles available for sale. Find the perfect car that matches your needs and budget.
                 </p>
             </div>
+            
+            <div className="flex flex-col lg:flex-row gap-6">
+                {/* Filter sidebar */}
+                <div className="w-full lg:w-1/8 xl:w-1/5">
+                    <CarFilter />
+                </div>
 
-            <div className="grid grid-cols-1 lg:px-30 px-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+
+              {/* Car listings */}
+              <div className="w-full lg:w-3/4 xl:w-4/5">
+            <div className="grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-4 gap-3">
                {cars.map((car, index) => (
                 <CarCard
                   key={index}
@@ -105,6 +121,12 @@ export default function UsedCarsPage() {
                   status={car.status}
                 />
                ))}
+            </div>
+
+            
+
+            
+            </div>
             </div>
         </div>
     );
