@@ -1,7 +1,6 @@
 'use client'
 
-
-
+// Import necessary components
 import Link from 'next/link';
 import React, { useState } from 'react';
 import Image from 'next/image';
@@ -71,29 +70,6 @@ const Header = () => {
                 </Link>
                 <Link href="/value" className="block px-4 py-2 text-[#272D3C] hover:font-bold hover:underline">
                   Value Your Car
-                </Link>
-              </div>
-            </div>
-            <div className="relative group"
-                 onMouseEnter={() => setActiveDropdown('services')}
-                 onMouseLeave={() => setActiveDropdown(null)}>
-              <button 
-                className="flex items-center text-white hover:text-white font-bold"
-              > 
-                Services
-                <svg className={`ml-1 w-4 h-4 transform ${activeDropdown === 'services' ? 'rotate-180' : ''} transition-transform duration-200`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </button>
-              <div className={`absolute z-50 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 transition-all duration-200 ${activeDropdown === 'services' ? 'opacity-100 visible' : 'opacity-0 invisible'}`}>
-                <Link href="/insurance" className="block px-4 py-2 text-[#272D3C] hover:font-bold hover:underline">
-                  Car Insurance
-                </Link>
-                <Link href="/finance" className="block px-4 py-2 text-[#272D3C] hover:font-bold hover:underline">
-                  Car Finance
-                </Link>
-                <Link href="/inspection" className="block px-4 py-2 text-[#272D3C] hover:font-bold hover:underline">
-                  Car Inspection
                 </Link>
               </div>
             </div>

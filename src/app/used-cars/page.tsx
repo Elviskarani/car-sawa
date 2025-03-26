@@ -12,11 +12,10 @@ export default function UsedCarsPage() {
     const cars: CarData[] = [
       { 
         id: 'toyota-land-cruiser-2024', // Ensure consistent id
-
         imageSrc: '/2024toyotalandcruiser.jpeg', 
         name: 'Toyota Land Cruiser', 
         price: '10,000,000', 
-        pageUrl: '/cars/2024-toyota-land-cruiser',
+        pageUrl: '/used-cars/toyota-land-cruiser-2024',
         year: '2023',
         mileage: '12,500',
         transmission: 'Automatic',
@@ -36,7 +35,7 @@ export default function UsedCarsPage() {
         imageSrc: '/bmwx5.jpg', 
         name: 'BMW X5', 
         price: '7,000,000', 
-        pageUrl: '/cars/2024-bmw-x5',
+        pageUrl: '/used-cars/bmw-x5-2024',
         year: '2022',
         mileage: '28,600',
         transmission: 'Automatic',
@@ -56,7 +55,7 @@ export default function UsedCarsPage() {
         imageSrc: '/suzukivitara.jpg', 
         name: 'Suzuki Vitara', 
         price: '8,000,000', 
-        pageUrl: '/cars/2024-suzuki-vitara',
+        pageUrl: '/used-cars/suzuki-vitara-2024',
         year: '2023',
         mileage: '15,200',
         transmission: 'Manual',
@@ -70,7 +69,7 @@ export default function UsedCarsPage() {
         imageSrc: '/toyotahilux.jpeg', 
         name: 'Toyota Hilux', 
         price: '700,000', 
-        pageUrl: '/cars/2024-toyota-hilux',
+        pageUrl: '/used-cars/toyota-hilux-2024',
         year: '2022',
         mileage: '42,300',
         transmission: 'Manual',
@@ -83,7 +82,7 @@ export default function UsedCarsPage() {
         imageSrc: '/mercedes.jpg', 
         name: 'Mercedes Benz', 
         price: '600,000', 
-        pageUrl: '/cars/2024-mercedes-benz',
+        pageUrl: '/used-cars/mercedes-benz-2024',
         year: '2021',
         mileage: '55,200',
         transmission: 'Automatic',
