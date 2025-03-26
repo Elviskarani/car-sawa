@@ -43,6 +43,13 @@ const CarCard = ({
           fill
           className="object-cover"
           priority={false}
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          onError={(e) => {
+            // Fallback to a placeholder if image fails to load
+            const target = e.target as HTMLImageElement;
+            target.onerror = null; // Prevent infinite loop
+            target.src = 'https://placehold.co/600x400?text=Car+Image';
+          }}
         />
         
         {/* Status badge - Used/New */}
