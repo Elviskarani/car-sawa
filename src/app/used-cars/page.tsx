@@ -1,4 +1,4 @@
-
+"use client";
 
 import CarCard from "@/components/carcard";
 import CarFilter from "@/components/CarFilter";

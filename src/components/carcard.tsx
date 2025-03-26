@@ -1,3 +1,5 @@
+"use client";
+
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -13,7 +15,6 @@ interface CarCardProps {
   fuelType?: string;
   engineSize?: string;
   status?: 'Available' | 'sold';
-  
 }
 
 // CarCard component
@@ -29,12 +30,17 @@ const CarCard = ({
   engineSize,
   status = 'Available',
 }: CarCardProps) => {
-  // Extract the car ID from the URL or use a formatted version of the name
-  const carId = carPageUrl.split('/').pop() || 
-                carName.toLowerCase().replace(/\s+/g, '-');
-  
+  // Construct fallback placeholder with the car name
+  const getPlaceholderImage = () => {
+    const encodedName = encodeURIComponent(carName);
+    return `https://placehold.co/600x400?text=${encodedName}`;
+  };
+
   return (
-    <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300">
+    <Link 
+      href={carPageUrl} 
+      className="block bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300"
+    >
       {/* Image container with status badge */}
       <div className="relative w-full pb-[55%]">
         <Image
@@ -45,54 +51,46 @@ const CarCard = ({
           priority={false}
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           onError={(e) => {
-            // Fallback to a placeholder if image fails to load
             const target = e.target as HTMLImageElement;
             target.onerror = null; // Prevent infinite loop
-            target.src = 'https://placehold.co/600x400?text=Car+Image';
+            target.src = getPlaceholderImage();
           }}
         />
         
-        {/* Status badge - Used/New */}
-        <div className="absolute bottom-0 left-0 bg-black text-white px-3 py-1 text-sm font-medium">
+        {/* Status badge - Highlight for sold cars */}
+        <div className={`absolute bottom-0 left-0 px-3 py-1 text-sm font-medium 
+          ${status === 'sold' ? 'bg-red-500 text-white' : 'bg-green-500 text-white'}`}>
           {status}
         </div>
       </div>
       
       {/* Car details section */}
-      <div className="p-2">
-        {/* Engine/Trim info */}
-        <div className="text-gray-500 text-xs mb-1 flex items-center">
-          {engineSize && <span>{engineSize}</span>}
-          {fuelType && <span className="mx-1">{fuelType}</span>}
-        </div>
-        
+      <div className="p-4">
         {/* Car name */}
-        <h2 className="text-sm font-bold text-gray-900 mb-1">
-          {carName}
+        <h2 className="text-lg font-bold text-gray-900 mb-2">
+          {carName} {year && `(${year})`}
         </h2>
         
-        {/* Specs row */}
-        <div className="flex items-center text-gray-600 text-xs mb-1">
-          {transmission && <span>{transmission}</span>}
-          {transmission && fuelType && <span className="mx-1">•</span>}
-          {fuelType && <span>{fuelType}</span>}
-          {(fuelType && engineSize) && <span className="mx-1">•</span>}
-          {engineSize && <span>{engineSize}</span>}
+        {/* Specs row with conditional rendering */}
+        <div className="flex items-center text-gray-600 text-sm mb-2">
+          {[transmission, fuelType, engineSize]
+            .filter(Boolean)
+            .join(' • ')}
         </div>
         
         {/* Price */}
-        <div className="text-sm font-bold mb-1">
-          ksh:{price}
+        <div className="text-xl font-bold text-primary mb-2">
+          KES {price}
         </div>
         
-        {/* Year and mileage */}
-        <div className="text-xs text-gray-600 border-t pt-2">
-          {year && <span>{year}</span>}
-          {year && mileage && <span className="mx-1">•</span>}
-          {mileage && <span>{mileage} Kilometres</span>}
-        </div>
+        {/* Mileage */}
+        {mileage && (
+          <div className="text-sm text-gray-600">
+            {mileage} Kilometres
+          </div>
+        )}
       </div>
-    </div>
+    </Link>
   );
 };
 
