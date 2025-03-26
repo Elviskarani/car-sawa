@@ -2,19 +2,8 @@
 
 import CarCard from "@/components/carcard";
 import CarFilter from "@/components/CarFilter";
+import { CarData } from "@/app/car-data";
 
-type CarData = {
-  imageSrc: string;
-  name: string;
-  price: string;
-  pageUrl: string;
-  year?: string;
-  mileage?: string;
-  transmission?: string;
-  fuelType?: string;
-  engineSize?: string;
-  status?: 'Available' | 'sold';
-}
 
 
 
@@ -22,6 +11,8 @@ export default function UsedCarsPage() {
     // Car data with the defined type and new properties
     const cars: CarData[] = [
       { 
+        id: 'toyota-land-cruiser-2024', // Ensure consistent id
+
         imageSrc: '/2024toyotalandcruiser.jpeg', 
         name: 'Toyota Land Cruiser', 
         price: '10,000,000', 
@@ -32,8 +23,16 @@ export default function UsedCarsPage() {
         fuelType: 'Diesel',
         engineSize: '3.0 L',
         status: 'Available',
+        description: 'Robust and luxurious SUV with exceptional off-road capabilities.',
+        features: [
+          'Advanced 4WD System',
+          'Leather Interior',
+          'Multi-Terrain Select',
+          'Adaptive Suspension'
+        ]
       },
       { 
+        id: 'bmw-x5-2024', // Ensure consistent id
         imageSrc: '/bmwx5.jpg', 
         name: 'BMW X5', 
         price: '7,000,000', 
@@ -44,8 +43,16 @@ export default function UsedCarsPage() {
         fuelType: 'Petrol',
         engineSize: '3.0 L',
         status: 'Available',
+        description: 'Luxury mid-size SUV with sporty performance and advanced technology.',
+        features: [
+          'xDrive All-Wheel Drive',
+          'Premium Sound System',
+          'Adaptive M Suspension',
+          'Gesture Control'
+        ]
       },
       { 
+        id: 'suzuki-vitara-2024', // Ensure consistent id
         imageSrc: '/suzukivitara.jpg', 
         name: 'Suzuki Vitara', 
         price: '8,000,000', 
@@ -59,6 +66,7 @@ export default function UsedCarsPage() {
       },
      
       { 
+        id: 'toyota-hilux-2024', // Ensure consistent id
         imageSrc: '/toyotahilux.jpeg', 
         name: 'Toyota Hilux', 
         price: '700,000', 
@@ -71,6 +79,7 @@ export default function UsedCarsPage() {
         status: 'sold',
       },
       { 
+        id: 'mercedes-benz-2024', // Ensure consistent id
         imageSrc: '/mercedes.jpg', 
         name: 'Mercedes Benz', 
         price: '600,000', 
@@ -105,28 +114,26 @@ export default function UsedCarsPage() {
 
               {/* Car listings */}
               <div className="w-full lg:w-3/4 xl:w-4/5">
-            <div className="grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-4 gap-3">
-               {cars.map((car, index) => (
-                <CarCard
-                  key={index}
-                  carImageSrc={car.imageSrc}
-                  carName={car.name}
-                  price={car.price}
-                  carPageUrl={car.pageUrl}
-                  year={car.year}
-                  mileage={car.mileage}
-                  transmission={car.transmission}
-                  fuelType={car.fuelType}
-                  engineSize={car.engineSize}
-                  status={car.status}
-                />
-               ))}
-            </div>
+                    <div className="grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+                        {cars.map((car) => (
+                            <CarCard
+                                key={car.id}
+                                carImageSrc={car.imageSrc}
+                                carName={car.name}
+                                price={car.price}
+                                carPageUrl={car.pageUrl}
+                                year={car.year}
+                                mileage={car.mileage}
+                                transmission={car.transmission}
+                                fuelType={car.fuelType}
+                                engineSize={car.engineSize}
+                                status={car.status}
+                            />
+                        ))}
+                    </div>
+                </div>
 
-            
 
-            
-            </div>
             </div>
         </div>
     );

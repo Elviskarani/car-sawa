@@ -44,7 +44,7 @@ const TeamSection: React.FC<TeamSectionProps> = ({ teamMembers }) => {
       <div>
         <h2 className="text-3xl font-bold mb-2">Leadership team</h2>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {teamMembers.map((member) => (
             <div key={member.id} className="flex flex-col">
               <div className="relative h-40  mb-4 overflow-hidden">
