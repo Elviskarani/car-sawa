@@ -40,52 +40,31 @@ const Header = () => {
                 className="flex items-center text-white hover:text-white font-bold"
               > 
                 Buy Car
-                <svg className={`ml-1 w-4 h-4 transform ${activeDropdown === 'Buy' ? 'rotate-180' : ''} transition-transform duration-200`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
               </button>
               <div className={`absolute z-50 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 transition-all duration-200 ${activeDropdown === 'Buy' ? 'opacity-100 visible' : 'opacity-0 invisible'}`}>
                 <Link href="/cars" className="block px-4 py-2 text-[#272D3C] hover:font-bold hover:underline">
-                  Browse new Cars
+                  Browse Cars
                 </Link>
-                <Link href="/used-cars" className="block px-4 py-2 text-[#272D3C] hover:font-bold hover:underline">
-                  Browse used Cars
+                <Link href="/dealers" className="block px-4 py-2 text-[#272D3C] hover:font-bold hover:underline">
+                  Find Dealers
                 </Link>
+
               </div>
             </div>
-            <div className="relative group"
-                 onMouseEnter={() => setActiveDropdown('sell')}
-                 onMouseLeave={() => setActiveDropdown(null)}>
-              <button 
-                className="flex items-center text-white hover:text-white font-bold"
-              > 
-                Sell Car
-                <svg className={`ml-1 w-4 h-4 transform ${activeDropdown === 'sell' ? 'rotate-180' : ''} transition-transform duration-200`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </button>
-              <div className={`absolute z-50 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 transition-all duration-200 ${activeDropdown === 'sell' ? 'opacity-100 visible' : 'opacity-0 invisible'}`}>
-                <Link href="/sell-your-car" className="block px-4 py-2 text-[#272D3C] hover:font-bold hover:underline">
-                  List Your Car
-                </Link>
-                <Link href="/value" className="block px-4 py-2 text-[#272D3C] hover:font-bold hover:underline">
-                  Value Your Car
+
+
+              <div>
+                <Link href="/sell-your-car" className="flex items-center text-white hover:text-white hover:underline font-bold">
+                  Sell Car
                 </Link>
               </div>
-            </div>
            
-            <Link href="/faq" className="text-white hover:text-white font-bold">FAQ</Link>
-            <div className="relative group"
-                 onMouseEnter={() => setActiveDropdown('about')}
-                 onMouseLeave={() => setActiveDropdown(null)}>
-              <button 
-                className="flex items-center text-white hover:text-white font-bold"
-              > 
+            <Link href="/faq" className="text-white hover:text-white hover:underline font-bold">FAQ</Link>
+
+            <div >
+              <Link href="/about" className="flex items-center text-white hover:text-white hover:underline font-bold">
                 About CARSAWA
-                <svg className={`ml-1 w-4 h-4 transform ${activeDropdown === 'about' ? 'rotate-180' : ''} transition-transform duration-200`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </button>
+              </Link>
             </div>
           </nav>
             
@@ -119,8 +98,7 @@ const Header = () => {
               <div className="py-2">
                 <Link href="/cars" className="block px-4 py-2 text-gray-700 hover:bg-[#c1ff72] hover:text-[#1a1a1a]">Browse All Cars</Link>
                 <Link href="/dealers" className="block px-4 py-2 text-gray-700 hover:bg-[#c1ff72] hover:text-[#1a1a1a]">Find Dealers</Link>
-                <Link href="/sell" className="block px-4 py-2 text-gray-700 hover:bg-[#c1ff72] hover:text-[#1a1a1a]">List Your Car</Link>
-                <Link href="/reviews" className="block px-4 py-2 text-gray-700 hover:bg-[#c1ff72] hover:text-[#1a1a1a]">Car Reviews</Link>
+                <Link href="/sell-your-car" className="block px-4 py-2 text-gray-700 hover:bg-[#c1ff72] hover:text-[#1a1a1a]">List Your Car</Link>
                 <Link href="/faq" className="block px-4 py-2 text-gray-700 hover:bg-[#c1ff72] hover:text-[#1a1a1a]">FAQ</Link>
                 <Link href="/about" className="block px-4 py-2 text-gray-700 hover:bg-[#c1ff72] hover:text-[#1a1a1a]">About Us</Link>
                 <Link href="/contact" className="block px-4 py-2 text-gray-700 hover:bg-[#c1ff72] hover:text-[#1a1a1a]">Contact Us</Link>

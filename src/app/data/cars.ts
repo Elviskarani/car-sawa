@@ -1,4 +1,6 @@
 export interface Car {
+  image: string;
+  name: string;
   id: string;
   year: number;
   make: string;
@@ -10,11 +12,11 @@ export interface Car {
   leasePrice?: number;
   description: string;
   dealer: {
+    id:string;
     name: string;
     verified: boolean;
     profileImage: string;
     online?: boolean;
-    lastSeen?: string;
   };
   imageUrl: string;
   status: "AVAILABLE" | "SOLD";
@@ -39,11 +41,11 @@ export const cars: Car[] = [
     leasePrice: 180000,
     description: "The all-new Land Cruiser combines legendary capability with modern luxury",
     dealer: {
+      id: "1",
       name: "Premium Motors",
       verified: true,
       profileImage: "https://placehold.co/100x100?text=Premium+Motors",
       online: true,
-      lastSeen: "Active now"
     },
     imageUrl: "/2024toyotalandcruiser.jpeg",
     status: "AVAILABLE",
@@ -58,7 +60,9 @@ export const cars: Car[] = [
     mileage: 0,
     fuelType: "Diesel",
     bodyType: "SUV",
-    color: "Precious White Pearl"
+    color: "Precious White Pearl",
+    image: "/2024toyotalandcruiser.jpeg",
+    name: "Toyota Land Cruiser"
   },
   {
     id: "2",
@@ -72,6 +76,8 @@ export const cars: Car[] = [
     leasePrice: 120000,
     description: "The latest C-Class combines luxury with cutting-edge technology",
     dealer: {
+      id: "2",
+
       name: "AutoXpress",
       verified: true,
       profileImage: "https://placehold.co/100x100?text=AutoXpress",
@@ -89,7 +95,9 @@ export const cars: Car[] = [
     mileage: 0,
     fuelType: "Petrol",
     bodyType: "Sedan",
-    color: "Obsidian Black"
+    color: "Obsidian Black",
+    image: "/assets/cars/mercedes.jpg",
+    name: "Mercedes-Benz C200"
   },
   {
     id: "3",
@@ -102,11 +110,11 @@ export const cars: Car[] = [
     price: 12000000,
     description: "The BMW X5 sets the standard for luxury SUVs",
     dealer: {
+      id: "3",
       name: "Car City",
       verified: true,
       profileImage: "https://placehold.co/100x100?text=Car+City",
       online: false,
-      lastSeen: "2 hours ago"
     },
     imageUrl: "/assets/cars/bmwx5.jpg",
     status: "AVAILABLE",
@@ -120,7 +128,9 @@ export const cars: Car[] = [
     mileage: 0,
     fuelType: "Diesel",
     bodyType: "SUV",
-    color: "Alpine White"
+    color: "Alpine White",
+    image: "",
+    name: ""
   },
   {
     id: "4",
@@ -133,6 +143,7 @@ export const cars: Car[] = [
     price: 6500000,
     description: "The unbreakable legend, perfect for both work and leisure",
     dealer: {
+      id: "4",
       name: "Premium Motors",
       verified: true,
       profileImage: "https://placehold.co/100x100?text=Premium+Motors",
@@ -150,7 +161,9 @@ export const cars: Car[] = [
     mileage: 0,
     fuelType: "Diesel",
     bodyType: "Pickup",
-    color: "Super White"
+    color: "Super White",
+    image: "/assets/cars/toyotahilux.jpeg",
+    name: "Toyota Hilux"
   },
   {
     id: "5",
@@ -163,6 +176,7 @@ export const cars: Car[] = [
     price: 4200000,
     description: "Compact SUV with style and efficiency",
     dealer: {
+      id: "5",
       name: "Car City",
       verified: true,
       profileImage: "https://placehold.co/100x100?text=Car+City",
@@ -180,6 +194,8 @@ export const cars: Car[] = [
     mileage: 0,
     fuelType: "Petrol",
     bodyType: "SUV",
-    color: "Bright Red"
+    color: "Bright Red",
+    image: "/assets/cars/suzukivitara.jpg",
+    name: "Suzuki Vitara"
   }
 ];

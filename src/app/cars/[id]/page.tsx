@@ -36,6 +36,7 @@ export default function CarDetailsPageWrapper({ params }: { params: Promise<{ id
     aspiration: "Naturally Aspirated", // Default value as it's not in the car data
     title: `${car.year} ${car.make} ${car.model}`,
     dealer: {
+      id: car.dealer.id,
       name: car.dealer.name,
       image: dealerImagePath
     }

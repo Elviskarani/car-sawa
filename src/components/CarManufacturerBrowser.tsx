@@ -21,21 +21,22 @@ const CarManufacturerBrowser = () => {
   ];
 
   return (
-    <div className="bg-gray-100 px-52 py-6">
-      <h2 className="text-2xl font-bold mb-4">Browse by manufacturer</h2>
+    <div className="bg-whitesmoke px-8 py-6">
+      <h2 className="text-xl font-bold mb-4">Browse by manufacturer</h2>
       
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-3">
         {manufacturers.map((manufacturer) => (
           <Link 
             href={`/cars/manufacturer/${manufacturer.name.toLowerCase().replace(' ', '-')}`} 
             key={manufacturer.name}
-            className="bg-white rounded p-4 flex flex-col items-center justify-center hover:shadow-md transition-shadow"
+            className="bg-gray-100 rounded-lg p-4 flex flex-col items-center justify-center hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2"
           >
             <div className="w-10 h-10 relative mb-2">
               <Image
                 src={manufacturer.logo}
                 alt={manufacturer.name}
-                layout="fill"
+                width={40}
+                height={40}
                 objectFit="contain"
               />
             </div>

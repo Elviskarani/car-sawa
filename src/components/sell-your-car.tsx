@@ -4,6 +4,8 @@ import { useState, ChangeEvent, FormEvent } from 'react';
 import { X, Camera, Loader } from 'lucide-react';
 
 interface FormData {
+  name: string;
+  phonenumber: string;
   title: string;
   year: number;
   price: number;
@@ -15,6 +17,8 @@ interface FormData {
 
 export default function SellYourCar() {
   const [formData, setFormData] = useState<FormData>({
+    name: '',
+    phonenumber: '',
     title: '',
     year: new Date().getFullYear(),
     price: 0,
@@ -88,6 +92,8 @@ export default function SellYourCar() {
       
       // Reset form
       setFormData({
+        name: '',
+        phonenumber: '',
         title: '',
         year: new Date().getFullYear(),
         price: 0,
@@ -118,6 +124,35 @@ export default function SellYourCar() {
       
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          
+        <div>
+            <label className="block text-sm font-black mb-2">Name</label>
+            <input
+              type="text"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              placeholder="e.g. John Doe"
+              className="w-full px-3 py-2 border  bg-gray-100 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-black mb-2">Phone Number</label>
+            <input
+              type="tel"
+              name="phonenumber"
+              value={formData.phonenumber}
+              onChange={handleChange}
+              placeholder="e.g. 0712345678"
+              className="w-full px-3 py-2 border  bg-gray-100 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+              required
+            />
+          </div>
+
+
+
           <div>
             <label className="block text-sm font-black mb-2">Car Title</label>
             <input
@@ -126,7 +161,7 @@ export default function SellYourCar() {
               value={formData.title}
               onChange={handleChange}
               placeholder="e.g. 2020 Toyota Land Cruiser V8"
-              className="w-full px-3 py-2 border  bg-white border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+              className="w-full px-3 py-2 border  bg-gray-100 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
               required
             />
           </div>
@@ -137,7 +172,7 @@ export default function SellYourCar() {
               name="year"
               value={formData.year}
               onChange={handleChange}
-              className="w-full px-3 py-2 border bg-white border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+              className="w-full px-3 py-2 border bg-gray-100 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
               required
             >
               {Array.from({ length: 30 }, (_, i) => new Date().getFullYear() - i).map(year => (
@@ -154,7 +189,7 @@ export default function SellYourCar() {
               value={formData.price}
               onChange={handleChange}
               placeholder="e.g. 4500000"
-              className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+              className="w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
               required
               min="0"
             />
@@ -168,7 +203,7 @@ export default function SellYourCar() {
               value={formData.location}
               onChange={handleChange}
               placeholder="e.g. Nairobi, Kenya"
-              className="w-full px-3 py-2 border border-gray-300 bg-white rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+              className="w-full px-3 py-2 border bg-gray-100 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
               required
             />
           </div>
@@ -181,7 +216,7 @@ export default function SellYourCar() {
               value={formData.mileage}
               onChange={handleChange}
               placeholder="e.g. 45000"
-              className="w-full px-3 py-2 border bg-white border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+              className="w-full px-3 py-2 border bg-gray-100 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
               required
               min="0"
             />
@@ -193,7 +228,7 @@ export default function SellYourCar() {
               name="condition"
               value={formData.condition}
               onChange={handleChange}
-              className="w-full px-3 py-2 border bg-white border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+              className="w-full px-3 py-2 border bg-gray-100 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
               required
             >
               <option value="Excellent">Excellent</option>
@@ -252,7 +287,7 @@ export default function SellYourCar() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full bg-primary hover:bg-primary-hover text-black font-medium py-3 rounded-lg transition-colors flex items-center justify-center"
+            className="w-full bg-[#272D3C] hover:bg-primary-hover text-[#c1ff72] font-medium py-3 rounded-lg transition-colors flex items-center justify-center"
           >
             {isSubmitting ? (
               <>

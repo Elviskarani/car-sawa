@@ -71,11 +71,11 @@ function Cars() {
         </div>
       </div>
 
-      <div className="container mx-auto py-8">
+      <div className="container mx-auto py-8 ">
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Left Sidebar - Filters */}
           <div className="lg:w-1/4">
-            <div className="bg-white rounded-2xl shadow-lg p-6 space-y-6">
+            <div className="bg-white rounded-2xl shadow-lg p-4 space-y-6">
               <div className="mb-4">
                 <input
                   type="text"
@@ -240,10 +240,10 @@ function Cars() {
 
           {/* Main Content - Car Listings */}
           <div className="lg:w-3/4">
-            <div className="grid grid-cols-1 lg:px-30 px-4 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 px-4 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredCars.map((car) => (
-                <Link href={`/cars/${car.id}`} key={car.id}>
                   <CarCard
+                  key={car.id}
                     carImageSrc={car.imageUrl}
                     carName={`${car.make} ${car.model}`}
                     price={(car.price).toLocaleString()}
@@ -255,7 +255,6 @@ function Cars() {
                     engineSize={car.engineSize}
                     status="Available"
                   />
-                </Link>
               ))}
             </div>
           </div>

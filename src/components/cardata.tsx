@@ -2,10 +2,12 @@ import React from 'react';
 import Image from 'next/image';
 import { CarDetailsProps } from './cardetails';
 import { FaWhatsapp, FaPhoneAlt, FaArrowRight,FaTimes } from 'react-icons/fa';
+import Link from 'next/link';
 
 export interface CarDetailsPageProps extends CarDetailsProps {
   title: string;
   dealer: {
+    id: string;
     name: string;
     image: string;
   };
@@ -54,7 +56,11 @@ const CarDetailsPage: React.FC<CarDetailsPageProps> = ({
         </div>
 
         {/* Dealer Information */}
+
         <div className="flex items-center mb-6 bg-white p-4 rounded-lg">
+        <Link href={`/dealers/${dealer.id}`} className="flex items-center mb-6 bg-white p-4 rounded-lg hover:bg-gray-100 transition">
+
+
           <div className="relative w-12 h-12 sm:w-16 sm:h-16 mr-4">
             <Image
               src={dealer.image}
@@ -63,10 +69,14 @@ const CarDetailsPage: React.FC<CarDetailsPageProps> = ({
               className="rounded-full object-contain"
             />
           </div>
+          </Link>
+
           <div>
             <h2 className="font-semibold text-sm sm:text-base">{dealer.name}</h2>
           </div>
         </div>
+        
+
 
         {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 mb-6">

@@ -16,7 +16,7 @@ const HowItWorks = () => {
       <div className="container mx-auto px-19">
         {/* Header */}
         <div className="text-center mb-5">
-          <div className="w-15 h-1 bg-[#c1ff72] mx-auto mb-2"></div>
+          <div className="w-5 h-1 bg-[#c1ff72] mx-auto mb-2"></div>
           <h2 className="text-xl font-bold text-gray-800">How It Works</h2>
         </div>
 

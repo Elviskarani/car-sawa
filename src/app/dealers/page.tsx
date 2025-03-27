@@ -38,7 +38,7 @@ export default function DealersPage() {
   ];
 
   return (
-    <div className="w-full bg-[#DEDCD9] text-gray-800 py-5 px-3 md:py-12 md:px-8">
+    <div className="w-full bg-whitesmoke text-gray-800 py-5 px-4 md:py-12 md:px-8">
       <div className="container  mx-auto">
         
        
@@ -51,7 +51,7 @@ export default function DealersPage() {
   
         
         {/* Dealers grid with consistent layout */}
-        <div className="grid grid-cols-1 lg:px-30 px-4 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1  px-4 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {dealers.map((dealer, index) => (
             <DealerCard
               key={index}

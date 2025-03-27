@@ -15,6 +15,7 @@ export interface CarDetailsProps {
   aspiration: string;
   title: string;
   dealer: {
+    id: string;
     name: string;
     image: string;
   };
