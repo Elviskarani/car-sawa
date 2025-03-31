@@ -17,8 +17,11 @@ export interface Car {
     verified: boolean;
     profileImage: string;
     online?: boolean;
+    location?: string;
+    whatsappNumber?: string;
   };
   imageUrl: string;
+  images: string[];  
   status: "AVAILABLE" | "SOLD";
   savings?: string;
   features?: string[];
@@ -46,8 +49,18 @@ export const cars: Car[] = [
       verified: true,
       profileImage: "https://placehold.co/100x100?text=Premium+Motors",
       online: true,
+      location: "Nairobi",
+      whatsappNumber:"25791001601"
+
     },
     imageUrl: "/2024toyotalandcruiser.jpeg",
+    images: [
+      "/2024toyotalandcruiser.jpeg",
+      "/assets/landcruiser/interior1.jpg",
+      "/assets/landcruiser/rear.jpg",
+      "/assets/landcruiser/dashboard.jpg",
+      "/assets/landcruiser/engine.jpg"
+    ],
     status: "AVAILABLE",
     features: [
       "Multi-Terrain Select",
@@ -81,9 +94,18 @@ export const cars: Car[] = [
       name: "AutoXpress",
       verified: true,
       profileImage: "https://placehold.co/100x100?text=AutoXpress",
-      online: true
+      online: true,
+      location: "Nairobi",
+      whatsappNumber:"25791001601"
     },
     imageUrl: "/assets/cars/mercedes.jpg",
+    images: [
+      "/2024toyotalandcruiser.jpeg",
+      "/assets/landcruiser/interior1.jpg",
+      "/assets/landcruiser/rear.jpg",
+      "/assets/landcruiser/dashboard.jpg",
+      "/assets/landcruiser/engine.jpg"
+    ],
     status: "AVAILABLE",
     features: [
       "MBUX Infotainment",
@@ -115,8 +137,17 @@ export const cars: Car[] = [
       verified: true,
       profileImage: "https://placehold.co/100x100?text=Car+City",
       online: false,
+       location: "Nairobi",
+      whatsappNumber:"25791001601"
     },
     imageUrl: "/assets/cars/bmwx5.jpg",
+    images: [
+      "/2024toyotalandcruiser.jpeg",
+      "/assets/landcruiser/interior1.jpg",
+      "/assets/landcruiser/rear.jpg",
+      "/assets/landcruiser/dashboard.jpg",
+      "/assets/landcruiser/engine.jpg"
+    ],
     status: "AVAILABLE",
     features: [
       "xDrive All-Wheel Drive",
@@ -147,9 +178,18 @@ export const cars: Car[] = [
       name: "Premium Motors",
       verified: true,
       profileImage: "https://placehold.co/100x100?text=Premium+Motors",
-      online: true
+      online: true,
+      location: "Nairobi",
+      whatsappNumber:"25791001601"
     },
     imageUrl: "/assets/cars/toyotahilux.jpeg",
+    images: [
+      "/2024toyotalandcruiser.jpeg",
+      "/assets/landcruiser/interior1.jpg",
+      "/assets/landcruiser/rear.jpg",
+      "/assets/landcruiser/dashboard.jpg",
+      "/assets/landcruiser/engine.jpg"
+    ],
     status: "AVAILABLE",
     features: [
       "4x4 System",
@@ -180,9 +220,18 @@ export const cars: Car[] = [
       name: "Car City",
       verified: true,
       profileImage: "https://placehold.co/100x100?text=Car+City",
-      online: true
+      online: true,
+      location: "Nairobi",
+      whatsappNumber:"25791001601"
     },
     imageUrl: "/assets/cars/suzukivitara.jpg",
+    images: [
+      "/2024toyotalandcruiser.jpeg",
+      "/assets/landcruiser/interior1.jpg",
+      "/assets/landcruiser/rear.jpg",
+      "/assets/landcruiser/dashboard.jpg",
+      "/assets/landcruiser/engine.jpg"
+    ],
     status: "AVAILABLE",
     features: [
       "AllGrip 4WD",
@@ -197,5 +246,6 @@ export const cars: Car[] = [
     color: "Bright Red",
     image: "/assets/cars/suzukivitara.jpg",
     name: "Suzuki Vitara"
-  }
+  },
+  
 ];

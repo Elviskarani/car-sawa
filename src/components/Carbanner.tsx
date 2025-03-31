@@ -15,7 +15,7 @@ export default function CarPlatformBanner() {
         
         {/* Action Buttons */}
         <div className="flex space-x-4">
-          <Link href="/buy-a-car" className="bg-[#272D3C] text-white px-6 py-3 rounded-lg hover:text-[#c1ff72] transition-colors">
+          <Link href="/cars" className="bg-[#272D3C] text-white px-6 py-3 rounded-lg hover:text-[#c1ff72] transition-colors">
             Buy Car
           </Link>
           <Link href="/sell-your-car" className="bg-[#272D3C] text-white px-6 py-3 rounded-lg hover:text-[#c1ff72] transition-colors">

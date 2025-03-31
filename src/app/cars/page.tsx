@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { cars, type Car } from "@/app/data/cars";
@@ -17,6 +17,10 @@ function Cars() {
   const [currency, setCurrency] = useState("KES");
   const [showAdvancedSearch, setShowAdvancedSearch] = useState(false);
   const [showBudgetFilter, setShowBudgetFilter] = useState(false);
+  
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const carsPerPage = 9;
 
   const carBrands = [
     "Toyota",
@@ -55,9 +59,43 @@ function Cars() {
           return car.price >= min && (max === Infinity || car.price <= max);
         })()
       : true;
+      
+    const matchesBrand = selectedBrand
+      ? car.make === selectedBrand
+      : true;
+      
+    const matchesYear = () => {
+      const carYear = car.year;
+      const minYearVal = minYear ? parseInt(minYear) : 0;
+      const maxYearVal = maxYear ? parseInt(maxYear) : Infinity;
+      
+      return carYear >= minYearVal && carYear <= maxYearVal;
+    };
 
-    return matchesSearch && matchesPrice;
+    return matchesSearch && matchesPrice && matchesBrand && matchesYear();
   });
+  
+  // Get current cars for pagination
+  const indexOfLastCar = currentPage * carsPerPage;
+  const indexOfFirstCar = indexOfLastCar - carsPerPage;
+  const currentCars = filteredCars.slice(indexOfFirstCar, indexOfLastCar);
+  
+  // Calculate total pages
+  const totalPages = Math.ceil(filteredCars.length / carsPerPage);
+  
+  // Change page
+  const paginate = (pageNumber: number) => {
+    if (pageNumber > 0 && pageNumber <= totalPages) {
+      setCurrentPage(pageNumber);
+      // Scroll to top when changing page
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+  
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, priceFilter, selectedBrand, minYear, maxYear]);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -71,7 +109,7 @@ function Cars() {
         </div>
       </div>
 
-      <div className="container mx-auto py-8 ">
+      <div className="container mx-auto py-8">
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Left Sidebar - Filters */}
           <div className="lg:w-1/4">
@@ -240,23 +278,100 @@ function Cars() {
 
           {/* Main Content - Car Listings */}
           <div className="lg:w-3/4">
+            {/* Results count and pagination info */}
+            <div className="flex justify-between items-center mb-6 px-4">
+              <div className="text-[#272D3C]">
+                <p className="font-medium">
+                  Showing {indexOfFirstCar + 1}-{Math.min(indexOfLastCar, filteredCars.length)} of {filteredCars.length} cars
+                </p>
+              </div>
+            </div>
+            
+            {/* Car grid */}
             <div className="grid grid-cols-1 px-4 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredCars.map((car) => (
-                  <CarCard
+              {currentCars.map((car) => (
+                <CarCard
                   key={car.id}
-                    carImageSrc={car.imageUrl}
-                    carName={`${car.make} ${car.model}`}
-                    price={(car.price).toLocaleString()}
-                    carPageUrl={`/cars/${car.id}`}
-                    year={car.year.toString()}
-                    mileage={car.mileage ? car.mileage.toLocaleString() : '0'}
-                    transmission={car.transmission}
-                    fuelType={car.fuelType || 'Petrol'}
-                    engineSize={car.engineSize}
-                    status="Available"
-                  />
+                  carImageSrc={car.imageUrl}
+                  carName={`${car.make} ${car.model}`}
+                  price={(car.price).toLocaleString()}
+                  carPageUrl={`/cars/${car.id}`}
+                  year={car.year.toString()}
+                  mileage={car.mileage ? car.mileage.toLocaleString() : '0'}
+                  transmission={car.transmission}
+                  fuelType={car.fuelType || 'Petrol'}
+                  engineSize={car.engineSize}
+                  status="Available"
+                />
               ))}
             </div>
+            
+            {/* Pagination controls */}
+            {totalPages > 1 && (
+              <div className="flex justify-center mt-8">
+                <div className="flex space-x-2">
+                  <button
+                    onClick={() => paginate(currentPage - 1)}
+                    disabled={currentPage === 1}
+                    className={`px-4 py-2 rounded-lg ${
+                      currentPage === 1
+                        ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                        : "bg-[#272D3C] text-white hover:bg-[#1a1a1a]"
+                    }`}
+                  >
+                    Previous
+                  </button>
+                  
+                  {/* Page numbers */}
+                  <div className="flex space-x-2">
+                    {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                      // Show first page, last page, current page, and pages around current
+                      let pageToShow;
+                      
+                      if (totalPages <= 5) {
+                        // If 5 or fewer pages, show all
+                        pageToShow = i + 1;
+                      } else if (currentPage <= 3) {
+                        // If near beginning, show first 5 pages
+                        pageToShow = i + 1;
+                      } else if (currentPage >= totalPages - 2) {
+                        // If near end, show last 5 pages
+                        pageToShow = totalPages - 4 + i;
+                      } else {
+                        // Show current page and 2 pages on each side
+                        pageToShow = currentPage - 2 + i;
+                      }
+                      
+                      return (
+                        <button
+                          key={pageToShow}
+                          onClick={() => paginate(pageToShow)}
+                          className={`px-4 py-2 rounded-lg ${
+                            currentPage === pageToShow
+                              ? "bg-[#c1ff72] text-[#272D3C] font-bold"
+                              : "bg-gray-200 hover:bg-gray-300"
+                          }`}
+                        >
+                          {pageToShow}
+                        </button>
+                      );
+                    })}
+                  </div>
+                  
+                  <button
+                    onClick={() => paginate(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                    className={`px-4 py-2 rounded-lg ${
+                      currentPage === totalPages
+                        ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                        : "bg-[#272D3C] text-white hover:bg-[#1a1a1a]"
+                    }`}
+                  >
+                    Next
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

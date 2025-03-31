@@ -18,7 +18,7 @@ export default function CarDetailsPageWrapper({ params }: { params: Promise<{ id
 
   // Create a local dealer image path for Next.js Image compatibility
   const dealerImagePath = car.dealer.profileImage.startsWith("http") 
-    ? "/essence.webp" // Use a local fallback image for external URLs
+    ? "/placeholder-image.webp" // Use a local fallback image for external URLs
     : car.dealer.profileImage;
 
   // Prepare data for CarDetailsPage component
@@ -38,14 +38,20 @@ export default function CarDetailsPageWrapper({ params }: { params: Promise<{ id
     dealer: {
       id: car.dealer.id,
       name: car.dealer.name,
-      image: dealerImagePath
-    }
+      image: dealerImagePath,
+      profileImage: dealerImagePath,
+      whatsappNumber: car.dealer.whatsappNumber || ""
+    },
+    dealerprofileImage: dealerImagePath,
+    dealerwhatsappNumber: car.dealer.whatsappNumber || ""
   };
 
   // Prepare images for the carousel
   // If there's only one image, duplicate it to ensure the carousel has content
-  const carImages = car.imageUrl ? [car.imageUrl] : [];
-  
+  const carImages = car.images && car.images.length > 0 
+    ? car.images 
+    : (car.imageUrl ? [car.imageUrl] : []);
+    
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Navigation Bar */}

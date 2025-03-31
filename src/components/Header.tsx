@@ -3,20 +3,11 @@
 // Import necessary components
 import Link from 'next/link';
 import React, { useState } from 'react';
-import Image from 'next/image';
 import { FiPhone } from 'react-icons/fi';
-import { FiUser } from 'react-icons/fi';
 
-import LoginModal from '../components/LoginModal';
 
 const Header = () => {
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
-
-  const [showLoginModal, setShowLoginModal] = useState(false);
-
-  const handleCloseLoginModal = () => {
-    setShowLoginModal(false);
-  };
 
   return (
     <>
@@ -74,14 +65,7 @@ const Header = () => {
                 <FiPhone className="mr-2" />
                 +254791001601
               </Link>
-              <button 
-               onClick={() => setShowLoginModal(true)} 
-               className="flex items-center text-white hover:text-white font-bold"
-               aria-label="Sign Up or Login"
-             >
-               <FiUser className="block md:hidden" aria-hidden="true" />
-               <span className="hidden md:block">Sign Up/Login</span>
-              </button>
+             
             </div>
 
           {/* Mobile menu button */}
@@ -109,8 +93,7 @@ const Header = () => {
       </div>
     </header>
 
-      {/* Login Modal */}
-      <LoginModal isOpen={showLoginModal} onClose={handleCloseLoginModal} />
+     
     </>
   );
 };

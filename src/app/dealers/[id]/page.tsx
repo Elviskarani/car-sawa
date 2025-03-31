@@ -4,6 +4,8 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { cars } from '@/app/data/cars';
 import CarCard from "@/components/carcard";
+import { FiPhone } from 'react-icons/fi';
+import { FiMapPin } from 'react-icons/fi';
 
 interface PageParams {
   params: {
@@ -19,8 +21,8 @@ export function generateStaticParams() {
   }));
 }
 
-export default function DealerPage({ params }: PageParams): React.ReactNode {
-  const { id } = params;
+export default async function DealerPage({ params }: PageParams): Promise<React.ReactNode> {
+  const { id } = await params;
   
   // Find the first car with this dealer ID to get dealer details
   const dealerCar = cars.find(car => car.dealer.id === id);
@@ -37,7 +39,7 @@ export default function DealerPage({ params }: PageParams): React.ReactNode {
 
   return (
     <div className="bg-whitesmoke w-full">
-        <div className="flex items-center w-full px-8 py-4 bg-[#272D3C] mb-7">
+        <div className="flex items-center w-full px-4 py-4 bg-[#272D3C] mb-7">
         {/* Back button */}
         <Link href="/dealers" className="inline-flex items-center text-white mb-6 hover:underline">
           <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -50,7 +52,7 @@ export default function DealerPage({ params }: PageParams): React.ReactNode {
         <div className="container mx-auto">
 
         {/* Hero Image */}
-        <div className="flex items-center mb-7">
+        <div className="flex px-4 items-center mb-7">
           <Image
             src={dealer.profileImage}
             alt={`${dealer.name} dealership`}
@@ -60,13 +62,37 @@ export default function DealerPage({ params }: PageParams): React.ReactNode {
             className="w-[70px] h-[70px] object-contain shadow-lg bg-white rounded-full"
           />
           <h1 className="text-xs md:text-2xl font-bold ml-4">{dealer.name}</h1>
+          
         </div>
 
+        {/* Dealer Details */}
+        <div className="flex flex-col md:flex-row gap-4 md:gap-96 md:ml-auto">
+          <div className="flex items-center">
+            <div className="p-4 rounded-full bg-gray-100">
+              <FiMapPin className="w-5 h-5 text-gray-700" />
+            </div>
+            <div className="ml-3">
+              <p className="text-xs text-gray-500">Location</p>
+              <p className="font-medium">{dealer.location || "Not specified"}</p>
+            </div>
+          </div>
+
+          <div className="flex items-center">
+            <div className="p-4 rounded-full bg-gray-100">
+              <FiPhone className="w-5 h-5 text-gray-700" />
+            </div>
+            <div className="ml-3">
+              <p className="text-xs text-gray-500">Contact</p>
+              <p className="font-medium">{dealer.whatsappNumber || "Not available"}</p>
+            </div>
+          </div>
+            </div>
+
       
-        <h1 className="font-semibold text-2xl mb-6">Listings</h1>
+        <h1 className="font-semibold px-4 text-2xl mb-6">Listings</h1>
 
         {/* Dealer Cars Section */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 mb-5 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 px-4 md:grid-cols-3 mb-5 lg:grid-cols-4 gap-6">
           {dealerCars.length > 0 ? (
             dealerCars.map((car) => (
               <CarCard 

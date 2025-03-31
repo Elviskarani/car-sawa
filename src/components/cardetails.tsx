@@ -18,7 +18,11 @@ export interface CarDetailsProps {
     id: string;
     name: string;
     image: string;
+    profileImage: string;
+    whatsappNumber?: string;
   };
+  dealerprofileImage?: string; 
+  dealerwhatsappNumber?: string;
   
 }
 
@@ -39,10 +43,13 @@ const CarDetails: React.FC<CarDetailsProps> = ({
   aspiration,
   title,
   dealer,
-
-  
+  dealerprofileImage,
+  dealerwhatsappNumber
+    
 
 }) => {
+
+
   // Format price with commas and currency
   const formattedPrice = price.toLocaleString('en-KE', {
     style: 'currency',

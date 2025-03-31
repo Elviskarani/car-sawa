@@ -10,12 +10,16 @@ export interface CarDetailsPageProps extends CarDetailsProps {
     id: string;
     name: string;
     image: string;
+    profileImage: string;
+    whatsappNumber?: string;
   };
 }
 
 const CarDetailsPage: React.FC<CarDetailsPageProps> = ({
     title,
     dealer,
+    dealerprofileImage,
+    dealerwhatsappNumber,
     ...carDetails
   }) => {
 
@@ -63,7 +67,7 @@ const CarDetailsPage: React.FC<CarDetailsPageProps> = ({
 
           <div className="relative w-12 h-12 sm:w-16 sm:h-16 mr-4">
             <Image
-              src={dealer.image}
+              src={dealer.profileImage}
               alt={dealer.name}
               fill
               className="rounded-full object-contain"
@@ -84,7 +88,7 @@ const CarDetailsPage: React.FC<CarDetailsPageProps> = ({
             className="flex-1 bg-[#25D366] text-white py-3 rounded-lg flex items-center justify-center space-x-2 hover:bg-green-600 transition"
             onClick={() =>
               window.open(
-                `https://wa.me/YOUR_PHONE_NUMBER?text=Enquiry about ${title}`,
+                `https://wa.me/${dealer.whatsappNumber}?text=Enquiry about ${title}`,
                 '_blank'
               )
             }

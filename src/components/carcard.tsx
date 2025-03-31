@@ -15,6 +15,8 @@ interface CarCardProps {
   fuelType?: string;
   engineSize?: string;
   status?: 'Available' | 'sold';
+  dealerLocation?: string;
+  dealerWhatsappNumber?: string;
 }
 
 // CarCard component
@@ -29,6 +31,8 @@ const CarCard = ({
   fuelType,
   engineSize,
   status = 'Available',
+  dealerLocation,
+  dealerWhatsappNumber,
 }: CarCardProps) => {
   // Construct fallback placeholder with the car name
   const getPlaceholderImage = () => {

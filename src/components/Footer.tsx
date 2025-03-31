@@ -37,9 +37,11 @@ const Footer = () => {
             <h3 className="mb-4 font-bold" style={{ color: '#c1ff72' }}>Company</h3>
             <ul>
               <li className="mb-2"><Link href="/about">About</Link></li>
-              <li className="mb-2"><Link href="/buy-a-car">Buy a Car</Link></li>
+              <li className="mb-2"><Link href="/cars">Buy a Car</Link></li>
               <li className="mb-2"><Link href="/sell-your-car">Sell Your Car</Link></li>
-              <li className="mb-2"><Link href="/contact">Contact</Link></li>
+              <li className="mb-2"><a href="https://wa.me/254716937165" target="_blank" rel="noopener noreferrer">
+                Contact
+              </a></li>
             </ul>
           </div>
 
@@ -61,7 +63,7 @@ const Footer = () => {
               </p>
               
               <p className="mb-1">CarSawa Ruiru <span style={{ color: '#c1ff72' }}>Now Open</span></p>
-              <p><Link href="/contact" style={{ color: '#c1ff72' }}>Contact Us</Link></p>
+              <p><a href="https://wa.me/254716937165" target="_blank" rel="noopener noreferrer" style={{ color: '#c1ff72' }}>Contact Us</a></p>
             </div>
           </div>
         </div>
