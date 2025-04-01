@@ -7,10 +7,8 @@ import CarCard from "@/components/carcard";
 import { FiPhone } from 'react-icons/fi';
 import { FiMapPin } from 'react-icons/fi';
 
-interface PageParams {
-  params: {
-    id: string;
-  };
+interface PageProps {
+  params: Promise<{ id: string }>;
 }
 
 export function generateStaticParams() {
@@ -21,8 +19,9 @@ export function generateStaticParams() {
   }));
 }
 
-export default async function DealerPage({ params }: PageParams): Promise<React.ReactNode> {
-  const { id } = await params;
+export default async function DealerPage({ params }: PageProps) {
+  const resolvedParams = await params;
+  const { id } = resolvedParams;
   
   // Find the first car with this dealer ID to get dealer details
   const dealerCar = cars.find(car => car.dealer.id === id);

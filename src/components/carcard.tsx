@@ -39,6 +39,11 @@ const CarCard = ({
     return `https://placehold.co/600x400?text=${encodedName}`;
   };
 
+  // Use placeholder image if carImageSrc is empty
+  const imageSrc = carImageSrc && carImageSrc.trim() !== '' 
+    ? carImageSrc 
+    : getPlaceholderImage();
+
   return (
     <Link 
       href={carPageUrl} 
@@ -47,7 +52,7 @@ const CarCard = ({
       {/* Image container with status badge */}
       <div className="relative w-full pb-[55%]">
         <Image
-          src={carImageSrc}
+          src={imageSrc}
           alt={`${carName}`}
           fill
           className="object-cover"
