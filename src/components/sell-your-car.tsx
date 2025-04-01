@@ -2,6 +2,7 @@
 
 import { useState, ChangeEvent, FormEvent } from 'react';
 import { X, Camera, Loader } from 'lucide-react';
+import Image from 'next/image';
 
 interface FormData {
   name: string;
@@ -255,7 +256,7 @@ export default function SellYourCar() {
           <div className="grid grid-cols-2  md:grid-cols-4 gap-4">
             {previewUrls.map((url, index) => (
               <div key={index} className="relative aspect-[4/3] bg-gray-100 rounded-lg overflow-hidden">
-                <img src={url} alt={`Car preview ${index + 1}`} className="w-full h-full object-cover" />
+                <Image src={url} alt={`Car preview ${index + 1}`} fill className="object-cover" />
                 <button
                   type="button"
                   onClick={() => removeImage(index)}

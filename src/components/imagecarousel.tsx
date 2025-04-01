@@ -3,8 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { FaArrowRight } from "react-icons/fa6";
 import { FaArrowLeft } from "react-icons/fa";
-
-
+import Image from 'next/image';
 
 interface ImageCarouselProps {
   images: string[];
@@ -12,6 +11,7 @@ interface ImageCarouselProps {
 
 export default function ImageCarousel({ images }: ImageCarouselProps) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [thumbnailErrors, setThumbnailErrors] = useState<Record<number, boolean>>({});
   const carouselRef = useRef<HTMLDivElement>(null);
   const startXRef = useRef<number>(0);
 
@@ -65,6 +65,10 @@ export default function ImageCarousel({ images }: ImageCarouselProps) {
     };
   }, []);
 
+  const handleThumbnailError = (index: number) => {
+    setThumbnailErrors(prev => ({ ...prev, [index]: true }));
+  };
+
   const renderImage = (imageSrc: string, index: number) => {
     if (imageSrc === '/placeholder-image.webp') {
       return (
@@ -78,10 +82,11 @@ export default function ImageCarousel({ images }: ImageCarouselProps) {
     }
 
     return (
-      <img
+      <Image
         src={imageSrc}
         alt={`Image ${index + 1}`}
-        className="w-full h-full object-cover"
+        fill
+        className="object-cover"
         onError={(e) => {
           (e.target as HTMLImageElement).src = '/placeholder-image.webp';
         }}
@@ -103,7 +108,7 @@ export default function ImageCarousel({ images }: ImageCarouselProps) {
         {/* Previous Button */}
         <button
           onClick={handlePrevImage}
-          className="absolute top-1/2 left-2 -translate-y-1/2   p-2 rounded-full transition-colors flex items-center justify-center w-12 h-12"
+          className="absolute top-1/2 left-2 -translate-y-1/2 p-2 rounded-full transition-colors flex items-center justify-center w-12 h-12"
         >
          <FaArrowLeft className="w-15 text-white hover:text-[#25D366] hover:scale-110 h-15" />
         </button>
@@ -128,22 +133,22 @@ export default function ImageCarousel({ images }: ImageCarouselProps) {
           <button
             key={index}
             onClick={() => setCurrentImageIndex(index)}
-            className={`w-12 h-12 flex-shrink-0 rounded ${
+            className={`w-12 h-12 flex-shrink-0 rounded relative ${
               index === currentImageIndex ? 'border-2 border-blue-500' : 'opacity-50 hover:opacity-100'
             }`}
           >
-            {image === '/placeholder-image.webp' ? (
+            {image === '/placeholder-image.webp' || thumbnailErrors[index] ? (
               <div className="w-full h-full bg-gray-200 flex items-center justify-center rounded">
                 <p className="text-xs text-gray-500">N/A</p>
               </div>
             ) : (
-              <img
+              <Image
                 src={image}
                 alt={`Thumbnail ${index + 1}`}
-                className="w-full h-full object-cover rounded"
-                onError={(e) => {
-                  (e.target as HTMLImageElement).src = '/placeholder-image.webp';
-                }}
+                className="object-cover rounded"
+                fill
+                sizes="48px"
+                onError={() => handleThumbnailError(index)}
               />
             )}
           </button>

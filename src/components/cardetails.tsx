@@ -41,10 +41,7 @@ const CarDetails: React.FC<CarDetailsProps> = ({
   transmission,
   torque,
   aspiration,
-  title,
-  dealer,
-  dealerprofileImage,
-  dealerwhatsappNumber
+ 
     
 
 }) => {

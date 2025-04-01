@@ -1,9 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import Image from "next/image";
-import Link from "next/link";
-import { cars, type Car } from "@/app/data/cars";
+import { cars } from "@/app/data/cars";
 import CarCard from "@/components/carcard";
 
 function Cars() {

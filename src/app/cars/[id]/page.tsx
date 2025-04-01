@@ -2,7 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import { cars, type Car } from "@/app/data/cars";
+import { cars } from "@/app/data/cars";
 import { notFound } from "next/navigation";
 import ImageCarousel from "@/components/imagecarousel";
 import CarDetailsPage from "@/components/cardata";

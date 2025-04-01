@@ -1,4 +1,5 @@
 export interface Car {
+  type: boolean;
   image: string;
   name: string;
   id: string;
@@ -50,8 +51,7 @@ export const cars: Car[] = [
       profileImage: "https://placehold.co/100x100?text=Premium+Motors",
       online: true,
       location: "Nairobi",
-      whatsappNumber:"25791001601"
-
+      whatsappNumber: "25791001601"
     },
     imageUrl: "/2024toyotalandcruiser.jpeg",
     images: [
@@ -75,7 +75,8 @@ export const cars: Car[] = [
     bodyType: "SUV",
     color: "Precious White Pearl",
     image: "/2024toyotalandcruiser.jpeg",
-    name: "Toyota Land Cruiser"
+    name: "Toyota Land Cruiser",
+    type: false
   },
   {
     id: "2",
@@ -96,7 +97,7 @@ export const cars: Car[] = [
       profileImage: "https://placehold.co/100x100?text=AutoXpress",
       online: true,
       location: "Nairobi",
-      whatsappNumber:"25791001601"
+      whatsappNumber: "25791001601"
     },
     imageUrl: "/assets/cars/mercedes.jpg",
     images: [
@@ -119,7 +120,8 @@ export const cars: Car[] = [
     bodyType: "Sedan",
     color: "Obsidian Black",
     image: "/assets/cars/mercedes.jpg",
-    name: "Mercedes-Benz C200"
+    name: "Mercedes-Benz C200",
+    type: false
   },
   {
     id: "3",
@@ -137,8 +139,8 @@ export const cars: Car[] = [
       verified: true,
       profileImage: "https://placehold.co/100x100?text=Car+City",
       online: false,
-       location: "Nairobi",
-      whatsappNumber:"25791001601"
+      location: "Nairobi",
+      whatsappNumber: "25791001601"
     },
     imageUrl: "/assets/cars/bmwx5.jpg",
     images: [
@@ -161,7 +163,8 @@ export const cars: Car[] = [
     bodyType: "SUV",
     color: "Alpine White",
     image: "",
-    name: ""
+    name: "",
+    type: false
   },
   {
     id: "4",
@@ -180,7 +183,7 @@ export const cars: Car[] = [
       profileImage: "https://placehold.co/100x100?text=Premium+Motors",
       online: true,
       location: "Nairobi",
-      whatsappNumber:"25791001601"
+      whatsappNumber: "25791001601"
     },
     imageUrl: "/assets/cars/toyotahilux.jpeg",
     images: [
@@ -203,7 +206,8 @@ export const cars: Car[] = [
     bodyType: "Pickup",
     color: "Super White",
     image: "/assets/cars/toyotahilux.jpeg",
-    name: "Toyota Hilux"
+    name: "Toyota Hilux",
+    type: false
   },
   {
     id: "5",
@@ -222,7 +226,7 @@ export const cars: Car[] = [
       profileImage: "https://placehold.co/100x100?text=Car+City",
       online: true,
       location: "Nairobi",
-      whatsappNumber:"25791001601"
+      whatsappNumber: "25791001601"
     },
     imageUrl: "/assets/cars/suzukivitara.jpg",
     images: [
@@ -245,7 +249,8 @@ export const cars: Car[] = [
     bodyType: "SUV",
     color: "Bright Red",
     image: "/assets/cars/suzukivitara.jpg",
-    name: "Suzuki Vitara"
+    name: "Suzuki Vitara",
+    type: false
   },
   
 ];

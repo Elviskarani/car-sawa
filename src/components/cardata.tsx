@@ -18,9 +18,7 @@ export interface CarDetailsPageProps extends CarDetailsProps {
 const CarDetailsPage: React.FC<CarDetailsPageProps> = ({
     title,
     dealer,
-    dealerprofileImage,
-    dealerwhatsappNumber,
-    ...carDetails
+    
   }) => {
 
 

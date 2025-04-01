@@ -4,10 +4,10 @@ export default function Terms() {
             <h1 className="text-2xl font-bold">Terms of Service</h1>
             <div className="space-y-4">
                 <p>
-                    1. Carsawa offers a secure, verified, and transparent platform where cars can be traded; however, we are only liable for transactions made through the Carsawa offices, and we don’t bear responsibility for third-party transactions done outside our offices, even in cases where a vehicle has been advertised on our website. Contact us via 0791001601 for any clarification.
+                    1. Carsawa offers a secure, verified, and transparent platform where cars can be traded; however, we are only liable for transactions made through the Carsawa offices, and we don&apos;t bear responsibility for third-party transactions done outside our offices, even in cases where a vehicle has been advertised on our website. Contact us via 0791001601 for any clarification.
                 </p>
                 <p>
-                    2. Carsawa does not offer any sort of warranty for vehicles sold on the marketplace. All vehicles are sold on an "as is, where is" basis. However, our team will perform inspections on all cars before listing to ensure that the vehicles on our platform conform to our mechanical and documentation standards. These checks include, but are not limited to, verifying vehicle documentation, taking photographs, and ensuring the vehicle does not have any legal encumbrance that would stop its sale.
+                    2. Carsawa does not offer any sort of warranty for vehicles sold on the marketplace. All vehicles are sold on an &ldquo;as is, where is&rdquo; basis. However, our team will perform inspections on all cars before listing to ensure that the vehicles on our platform conform to our mechanical and documentation standards. These checks include, but are not limited to, verifying vehicle documentation, taking photographs, and ensuring the vehicle does not have any legal encumbrance that would stop its sale.
                 </p>
                 <p>
                     3. Carsawa is not responsible for collecting payments, drafting sale agreements, remitting payments to sellers, and overseeing the smooth transfer of vehicles listed on our platform.

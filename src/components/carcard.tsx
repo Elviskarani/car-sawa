@@ -31,8 +31,7 @@ const CarCard = ({
   fuelType,
   engineSize,
   status = 'Available',
-  dealerLocation,
-  dealerWhatsappNumber,
+  
 }: CarCardProps) => {
   // Construct fallback placeholder with the car name
   const getPlaceholderImage = () => {
