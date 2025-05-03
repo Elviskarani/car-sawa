@@ -1,12 +1,12 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { cars } from "@/app/data/cars";
 import CarCard from "@/components/carcard";
+import { searchCars, type Car, type SearchFilters } from "@/app/services/api";
 
 function Cars() {
   const [searchQuery, setSearchQuery] = useState("");
-  const [priceFilter, setPriceFilter] = useState("");
+  const [priceFilter, setpriceFilter] = useState("");
   const [selectedBrand, setSelectedBrand] = useState("");
   const [minYear, setMinYear] = useState("");
   const [maxYear, setMaxYear] = useState("");
@@ -16,10 +16,18 @@ function Cars() {
   const [showAdvancedSearch, setShowAdvancedSearch] = useState(false);
   const [showBudgetFilter, setShowBudgetFilter] = useState(false);
   
+  // Cars data state
+  const [cars, setCars] = useState<Car[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  
   // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
+  const [totalCars, setTotalCars] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
   const carsPerPage = 9;
 
+  // Common car brands
   const carBrands = [
     "Toyota",
     "Mazda",
@@ -36,52 +44,98 @@ function Cars() {
     "Suzuki",
   ];
 
-  // Filter cars based on search query and price filter
-  const filteredCars = cars.filter((car) => {
-    const matchesSearch = searchQuery
-      ? car.make.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        car.model.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        car.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        car.condition.toLowerCase().includes(searchQuery.toLowerCase())
-      : true;
+  // Parse price filter into min-max values for the API
+  const getPriceRangeFromFilter = (filterValue: string): { min: number, max: number } => {
+    if (!filterValue) return { min: 0, max: 0 };
+    
+    const [minStr, maxStr] = filterValue.split("-").map(range => range.trim());
+    
+    let min = 0;
+    let max = 0;
+    
+    if (minStr) {
+      min = parseFloat(minStr.replace(/[KM]/g, "")) * 
+        (minStr.includes("M") ? 1000000 : (minStr.includes("K") ? 1000 : 1));
+    }
+    
+    if (maxStr) {
+      if (maxStr.includes("Above")) {
+        max = 999999999; // Essentially no upper limit
+      } else {
+        max = parseFloat(maxStr.replace(/[KM]/g, "")) * 
+          (maxStr.includes("M") ? 1000000 : (maxStr.includes("K") ? 1000 : 1));
+      }
+    }
+    
+    return { min, max };
+  };
 
-    const matchesPrice = priceFilter
-      ? (() => {
-          const [min, max] = priceFilter.split("-").map((range) => {
-            if (range.includes("Above")) return Infinity;
-            return (
-              parseFloat(range.replace(/[KM]/g, "")) *
-              (range.includes("M") ? 1000000 : 1000)
-            );
-          });
-          return car.price >= min && (max === Infinity || car.price <= max);
-        })()
-      : true;
+  // Fetch cars from API
+  const fetchCars = async () => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      // Build filters object
+      const filters: SearchFilters = {
+        page: currentPage,
+        limit: carsPerPage,
+        query: searchQuery,
+      };
       
-    const matchesBrand = selectedBrand
-      ? car.make === selectedBrand
-      : true;
+      // Add make filter if selected
+      if (selectedBrand) {
+        filters.make = selectedBrand;
+      }
       
-    const matchesYear = () => {
-      const carYear = car.year;
-      const minYearVal = minYear ? parseInt(minYear) : 0;
-      const maxYearVal = maxYear ? parseInt(maxYear) : Infinity;
+      // Add year filters
+      if (minYear) filters.minYear = parseInt(minYear);
+      if (maxYear) filters.maxYear = parseInt(maxYear);
       
-      return carYear >= minYearVal && carYear <= maxYearVal;
-    };
+      // Add price filters
+      if (priceFilter) {
+        const { min, max } = getPriceRangeFromFilter(priceFilter);
+        filters.minPrice = min || undefined;
+        filters.maxPrice = max || undefined;
+      } else {
+        // Use custom price inputs if available
+        if (minPrice) filters.minPrice = parseInt(minPrice);
+        if (maxPrice) filters.maxPrice = parseInt(maxPrice);
+      }
+      
+      // Call the API
+      const response = await searchCars(filters);
+      
+      setCars(response.data);
+      setTotalCars(response.total);
+      setTotalPages(response.totalPages);
+    } catch (err) {
+      console.error("Error fetching cars:", err);
+      setError("Failed to load cars. Please try again later.");
+      setCars([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    return matchesSearch && matchesPrice && matchesBrand && matchesYear();
-  });
+  // Fetch cars when filters change
+  useEffect(() => {
+    fetchCars();
+  }, [currentPage, searchQuery, priceFilter, selectedBrand, minYear, maxYear]);
   
-  // Get current cars for pagination
-  const indexOfLastCar = currentPage * carsPerPage;
-  const indexOfFirstCar = indexOfLastCar - carsPerPage;
-  const currentCars = filteredCars.slice(indexOfFirstCar, indexOfLastCar);
-  
-  // Calculate total pages
-  const totalPages = Math.ceil(filteredCars.length / carsPerPage);
-  
-  // Change page
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, priceFilter, selectedBrand, minYear, maxYear]);
+
+  // Function to handle search button click
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    setCurrentPage(1);
+    fetchCars();
+  };
+
+  // Pagination function
   const paginate = (pageNumber: number) => {
     if (pageNumber > 0 && pageNumber <= totalPages) {
       setCurrentPage(pageNumber);
@@ -89,11 +143,6 @@ function Cars() {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
-  
-  // Reset to page 1 when filters change
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [searchQuery, priceFilter, selectedBrand, minYear, maxYear]);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -112,25 +161,77 @@ function Cars() {
           {/* Left Sidebar - Filters */}
           <div className="lg:w-1/4">
             <div className="bg-white rounded-2xl shadow-lg p-4 space-y-6">
-              <div className="mb-4">
-                <input
-                  type="text"
-                  placeholder="Search by make, model, or condition..."
-                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-[#c1ff72] focus:ring-0 text-[#272D3C]"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
-              </div>
+              <form onSubmit={handleSearch}>
+                <div className="mb-4">
+                  <input
+                    type="text"
+                    placeholder="Search by make, model, or condition..."
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-[#c1ff72] focus:ring-0 text-[#272D3C]"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
+                </div>
 
-              <div>
+                <div>
+                  <button
+                    type="button"
+                    className="flex items-center justify-between w-full text-[#272D3C] hover:text-[#1a1a1a] mb-4"
+                    onClick={() => setShowBudgetFilter(!showBudgetFilter)}
+                  >
+                    <h3 className="font-semibold text-lg">Filter by budget</h3>
+                    <svg
+                      className={`w-5 h-5 transform transition-transform ${
+                        showBudgetFilter ? "rotate-180" : ""
+                      }`}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 9l-7 7-7-7"
+                      />
+                    </svg>
+                  </button>
+                  {showBudgetFilter && (
+                    <div className="grid grid-cols-2 gap-2">
+                      {[
+                        "0- 500K",
+                        "500K- 1M",
+                        "1M- 2M",
+                        "2M- 3M",
+                        "3M- 5M",
+                        "5M- 10M",
+                        "Above 10M",
+                      ].map((range) => (
+                        <button
+                          type="button"
+                          key={range}
+                          className={`px-4 py-2 text-sm rounded-lg transition-colors ${
+                            priceFilter === range
+                              ? "bg-[#272D3C] text-white"
+                              : "bg-gray-50 hover:bg-[#c1ff72] hover:text-[#1a1a1a]"
+                          }`}
+                          onClick={() => setpriceFilter(range)}
+                        >
+                          {range}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
                 <button
-                  className="flex items-center justify-between w-full text-[#272D3C] hover:text-[#1a1a1a] mb-4"
-                  onClick={() => setShowBudgetFilter(!showBudgetFilter)}
+                  type="button"
+                  className="flex items-center justify-between w-full text-[#272D3C] hover:text-[#1a1a1a]"
+                  onClick={() => setShowAdvancedSearch(!showAdvancedSearch)}
                 >
-                  <h3 className="font-semibold text-lg">Filter by budget</h3>
+                  <span className="font-semibold text-lg">Advanced search</span>
                   <svg
                     className={`w-5 h-5 transform transition-transform ${
-                      showBudgetFilter ? "rotate-180" : ""
+                      showAdvancedSearch ? "rotate-180" : ""
                     }`}
                     fill="none"
                     stroke="currentColor"
@@ -144,133 +245,89 @@ function Cars() {
                     />
                   </svg>
                 </button>
-                {showBudgetFilter && (
-                  <div className="grid grid-cols-2 gap-2">
-                    {[
-                      "0- 500K",
-                      "500K- 1M",
-                      "1M- 2M",
-                      "2M- 3M",
-                      "3M- 5M",
-                      "5M- 10M",
-                      "Above 10M",
-                    ].map((range) => (
-                      <button
-                        key={range}
-                        className={`px-4 py-2 text-sm rounded-lg transition-colors ${
-                          priceFilter === range
-                            ? "bg-[#272D3C] text-white"
-                            : "bg-gray-50 hover:bg-[#c1ff72] hover:text-[#1a1a1a]"
-                        }`}
-                        onClick={() => setPriceFilter(range)}
+
+                {showAdvancedSearch && (
+                  <div className="space-y-4 pt-4">
+                    <div>
+                      <h3 className="font-semibold mb-2 text-[#272D3C]">
+                        Brand & Model
+                      </h3>
+                      <select
+                        className="w-full px-4 py-2 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-[#c1ff72] focus:ring-0"
+                        value={selectedBrand}
+                        onChange={(e) => setSelectedBrand(e.target.value)}
                       >
-                        {range}
-                      </button>
-                    ))}
+                        <option value="">Vehicle Brand</option>
+                        {carBrands.map((brand) => (
+                          <option key={brand} value={brand}>
+                            {brand}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div>
+                      <h3 className="font-semibold mb-2 text-[#272D3C]">
+                        Year of Manufacture
+                      </h3>
+                      <div className="grid grid-cols-2 gap-2">
+                        <input
+                          type="text"
+                          placeholder="Min YOM"
+                          className="px-4 py-2 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-[#c1ff72] focus:ring-0"
+                          value={minYear}
+                          onChange={(e) => setMinYear(e.target.value)}
+                        />
+                        <input
+                          type="text"
+                          placeholder="Max YOM"
+                          className="px-4 py-2 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-[#c1ff72] focus:ring-0"
+                          value={maxYear}
+                          onChange={(e) => setMaxYear(e.target.value)}
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <h3 className="font-semibold mb-2 text-[#272D3C]">
+                        Price & Currency
+                      </h3>
+                      <div className="grid grid-cols-2 gap-2 mb-2">
+                        <input
+                          type="text"
+                          placeholder="Min Price"
+                          className="px-4 py-2 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-[#c1ff72] focus:ring-0"
+                          value={minPrice}
+                          onChange={(e) => setMinPrice(e.target.value)}
+                        />
+                        <input
+                          type="text"
+                          placeholder="Max Price"
+                          className="px-4 py-2 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-[#c1ff72] focus:ring-0"
+                          value={maxPrice}
+                          onChange={(e) => setMaxPrice(e.target.value)}
+                        />
+                      </div>
+                      <select
+                        className="w-full px-4 py-2 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-[#c1ff72] focus:ring-0"
+                        value={currency}
+                        onChange={(e) => setCurrency(e.target.value)}
+                      >
+                        <option value="KES">KES</option>
+                        <option value="USD">USD</option>
+                        <option value="EUR">EUR</option>
+                      </select>
+                    </div>
                   </div>
                 )}
-              </div>
 
-              <button
-                className="flex items-center justify-between w-full text-[#272D3C] hover:text-[#1a1a1a]"
-                onClick={() => setShowAdvancedSearch(!showAdvancedSearch)}
-              >
-                <span className="font-semibold text-lg">Advanced search</span>
-                <svg
-                  className={`w-5 h-5 transform transition-transform ${
-                    showAdvancedSearch ? "rotate-180" : ""
-                  }`}
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
+                <button 
+                  type="submit"
+                  className="w-full bg-[#272D3C] text-white py-3 rounded-xl hover:bg-[#1a1a1a] transition-colors mt-4"
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
-              </button>
-
-              {showAdvancedSearch && (
-                <div className="space-y-4 pt-4">
-                  <div>
-                    <h3 className="font-semibold mb-2 text-[#272D3C]">
-                      Brand & Model
-                    </h3>
-                    <select
-                      className="w-full px-4 py-2 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-[#c1ff72] focus:ring-0"
-                      value={selectedBrand}
-                      onChange={(e) => setSelectedBrand(e.target.value)}
-                    >
-                      <option value="">Vehicle Brand</option>
-                      {carBrands.map((brand) => (
-                        <option key={brand} value={brand}>
-                          {brand}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div>
-                    <h3 className="font-semibold mb-2 text-[#272D3C]">
-                      Year of Manufacture
-                    </h3>
-                    <div className="grid grid-cols-2 gap-2">
-                      <input
-                        type="text"
-                        placeholder="Min YOM"
-                        className="px-4 py-2 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-[#c1ff72] focus:ring-0"
-                        value={minYear}
-                        onChange={(e) => setMinYear(e.target.value)}
-                      />
-                      <input
-                        type="text"
-                        placeholder="Max YOM"
-                        className="px-4 py-2 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-[#c1ff72] focus:ring-0"
-                        value={maxYear}
-                        onChange={(e) => setMaxYear(e.target.value)}
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <h3 className="font-semibold mb-2 text-[#272D3C]">
-                      Price & Currency
-                    </h3>
-                    <div className="grid grid-cols-2 gap-2 mb-2">
-                      <input
-                        type="text"
-                        placeholder="Min Price"
-                        className="px-4 py-2 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-[#c1ff72] focus:ring-0"
-                        value={minPrice}
-                        onChange={(e) => setMinPrice(e.target.value)}
-                      />
-                      <input
-                        type="text"
-                        placeholder="Max Price"
-                        className="px-4 py-2 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-[#c1ff72] focus:ring-0"
-                        value={maxPrice}
-                        onChange={(e) => setMaxPrice(e.target.value)}
-                      />
-                    </div>
-                    <select
-                      className="w-full px-4 py-2 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-[#c1ff72] focus:ring-0"
-                      value={currency}
-                      onChange={(e) => setCurrency(e.target.value)}
-                    >
-                      <option value="KES">KES</option>
-                      <option value="USD">USD</option>
-                      <option value="EUR">EUR</option>
-                    </select>
-                  </div>
-                </div>
-              )}
-
-              <button className="w-full bg-[#272D3C] text-white py-3 rounded-xl hover:bg-[#1a1a1a] transition-colors">
-                Search Cars
-              </button>
+                  Search Cars
+                </button>
+              </form>
             </div>
           </div>
 
@@ -280,32 +337,63 @@ function Cars() {
             <div className="flex justify-between items-center mb-6 px-4">
               <div className="text-[#272D3C]">
                 <p className="font-medium">
-                  Showing {indexOfFirstCar + 1}-{Math.min(indexOfLastCar, filteredCars.length)} of {filteredCars.length} cars
+                  {loading ? (
+                    "Loading cars..."
+                  ) : error ? (
+                    "Error loading cars"
+                  ) : (
+                    `Showing ${(currentPage - 1) * carsPerPage + 1}-${
+                      Math.min(currentPage * carsPerPage, totalCars)
+                    } of ${totalCars} cars`
+                  )}
                 </p>
               </div>
             </div>
             
+            {/* Error display */}
+            {error && (
+              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6">
+                {error}
+              </div>
+            )}
+            
+            {/* Loading state */}
+            {loading && (
+              <div className="flex justify-center items-center py-12">
+                <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-[#272D3C]"></div>
+              </div>
+            )}
+            
             {/* Car grid */}
-            <div className="grid grid-cols-1 px-4 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {currentCars.map((car) => (
-                <CarCard
-                  key={car.id}
-                  carImageSrc={car.imageUrl}
-                  carName={`${car.make} ${car.model}`}
-                  price={(car.price).toLocaleString()}
-                  carPageUrl={`/cars/${car.id}`}
-                  year={car.year.toString()}
-                  mileage={car.mileage ? car.mileage.toLocaleString() : '0'}
-                  transmission={car.transmission}
-                  fuelType={car.fuelType || 'Petrol'}
-                  engineSize={car.engineSize}
-                  status="Available"
-                />
-              ))}
-            </div>
+            {!loading && !error && (
+              <div className="grid grid-cols-1 px-4 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {cars.length > 0 ? (
+                  cars.map((car) => (
+                    <CarCard
+                      key={car.id}
+                      carImageSrc={car.imageUrl}
+                      carName={`${car.make} ${car.model}`}
+                      price={(car.price).toLocaleString()}
+                      carPageUrl={`/cars/${car.id}`}
+                      year={car.year.toString()}
+                      mileage={car.mileage ? car.mileage.toLocaleString() : '0'}
+                      transmission={car.transmission || 'N/A'}
+                      fuelType={car.fuelType || 'N/A'}
+                      engineSize={car.engineSize || 'N/A'}
+                      status={car.status || "Available"}
+                    />
+                  ))
+                ) : (
+                  <div className="col-span-full py-12 text-center text-gray-500">
+                    <p>No cars found matching your criteria.</p>
+                    <p className="mt-2">Try adjusting your filters.</p>
+                  </div>
+                )}
+              </div>
+            )}
             
             {/* Pagination controls */}
-            {totalPages > 1 && (
+            {!loading && !error && totalPages > 1 && (
               <div className="flex justify-center mt-8">
                 <div className="flex space-x-2">
                   <button

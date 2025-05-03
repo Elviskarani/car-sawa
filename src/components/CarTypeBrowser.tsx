@@ -2,12 +2,14 @@
 
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { cars, type Car } from "@/app/data/cars";
+import { searchCars, Car } from "@/app/services/api";
 import CarCard from "@/components/carcard";
 
 const CarTypeBrowser = () => {
   const [selectedType, setSelectedType] = useState<string | null>(null);
   const [filteredCars, setFilteredCars] = useState<Car[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   
   const carTypes = [
     { type: 'SUV', image: '/suv-dc743039.svg', displayName: 'SUVs' },
@@ -20,18 +22,33 @@ const CarTypeBrowser = () => {
     { type: 'Convertible', image: '/convertible-71f66687.svg', displayName: 'Convertibles' },
   ];
 
-  // Filter cars based on selected type
+  // Fetch cars based on selected type
   useEffect(() => {
     if (!selectedType) {
       setFilteredCars([]);
       return;
     }
     
-    const filtered = cars.filter(car => 
-      car.bodyType?.toLowerCase() === selectedType.toLowerCase()
-    );
+    const fetchCarsByType = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        
+        // Use the search API with body type filter
+        const response = await searchCars({
+          bodyType: selectedType
+        });
+        
+        setFilteredCars(response.data);
+      } catch (err) {
+        console.error('Error fetching cars by type:', err);
+        setError('Failed to load vehicles. Please try again later.');
+      } finally {
+        setLoading(false);
+      }
+    };
     
-    setFilteredCars(filtered);
+    fetchCarsByType();
   }, [selectedType]);
 
   // Handle type selection
@@ -89,21 +106,41 @@ const CarTypeBrowser = () => {
             </button>
           </div>
           
-          {filteredCars.length > 0 ? (
+          {loading ? (
+            <div className="flex justify-center items-center py-20">
+              <div className="text-center">
+                <div className="w-12 h-12 border-4 border-[#c1ff72] border-t-[#272D3C] rounded-full animate-spin mx-auto mb-4"></div>
+                <p className="text-gray-500">Loading vehicles...</p>
+              </div>
+            </div>
+          ) : error ? (
+            <div className="bg-red-50 rounded-lg shadow p-6 text-center">
+              <h3 className="text-lg font-semibold text-red-800 mb-2">Error</h3>
+              <p className="text-red-600">{error}</p>
+              <button
+                onClick={() => handleTypeSelect(selectedType)}
+                className="mt-4 px-4 py-2 bg-[#272D3C] text-white rounded-lg hover:bg-[#1a1a1a]"
+              >
+                Try Again
+              </button>
+            </div>
+          ) : filteredCars.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredCars.map((car) => (
                 <CarCard
                   key={car.id}
                   carImageSrc={car.imageUrl}
                   carName={`${car.make} ${car.model}`}
-                  price={(car.price).toLocaleString()}
+                  price={car.price.toLocaleString()}
                   carPageUrl={`/cars/${car.id}`}
                   year={car.year.toString()}
                   mileage={car.mileage ? car.mileage.toLocaleString() : '0'}
                   transmission={car.transmission}
                   fuelType={car.fuelType || 'Petrol'}
                   engineSize={car.engineSize}
-                  status="Available"
+                  status={car.status === "AVAILABLE" ? "Available" : "Sold"}
+                  dealerLocation={car.dealer?.location}
+                  dealerWhatsappNumber={car.dealer?.whatsappNumber}
                 />
               ))}
             </div>

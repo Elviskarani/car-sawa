@@ -14,7 +14,7 @@ interface CarCardProps {
   transmission?: string;
   fuelType?: string;
   engineSize?: string;
-  status?: 'Available' | 'sold';
+  status: string;
   dealerLocation?: string;
   dealerWhatsappNumber?: string;
 }
@@ -30,7 +30,7 @@ const CarCard = ({
   transmission,
   fuelType,
   engineSize,
-  status = 'Available',
+  status,
   
 }: CarCardProps) => {
   // Construct fallback placeholder with the car name

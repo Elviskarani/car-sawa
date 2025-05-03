@@ -1,35 +1,54 @@
 "use client";
 
-import React, { useState ,useMemo} from 'react';
+import React, { useState, useEffect } from 'react';
 import DealerCard from '@/components/DealerCard';
-import { cars } from '@/app/data/cars';
+import { getAllDealers, Dealer } from '@/app/services/api';
 
 export default function DealersPage() {
+  // States
+  const [dealers, setDealers] = useState<Array<{
+    imageSrc: string;
+    name: string;
+    location: string;
+    pageUrl: string;
+    verified?: boolean;
+  }>>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  
   // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
   const dealersPerPage = 6;
 
-  // Updated dealer data with consistent IDs
- // Extract unique dealers from cars data
- const dealers = useMemo(() => {
-  // Create a Map to store unique dealers by ID
-  const dealersMap = new Map();
-  
-  cars.forEach(car => {
-    if (car.dealer && car.dealer.id && !dealersMap.has(car.dealer.id)) {
-      dealersMap.set(car.dealer.id, {
-        imageSrc: car.dealer.profileImage || '/default-dealer.jpg',
-        name: car.dealer.name,
-        location: car.dealer.location || 'Location not specified',
-        pageUrl: `/dealers/${car.dealer.id}`,
-        verified: car.dealer.verified
-      });
-    }
-  });
-  
-  // Convert Map values to array
-  return Array.from(dealersMap.values());
-}, []);
+  // Fetch dealers data
+  useEffect(() => {
+    const fetchDealers = async () => {
+      try {
+        setLoading(true);
+        const dealersData = await getAllDealers();
+        
+        // Transform dealer data to match component props
+        const formattedDealers = dealersData.map((dealer: Dealer) => ({
+          imageSrc: dealer.profileImage || '/default-dealer.jpg',
+          name: dealer.name,
+          location: dealer.location || 'Location not specified',
+          pageUrl: `/dealers/${dealer.id}`,
+          verified: dealer.verified
+        }));
+        
+        setDealers(formattedDealers);
+        setError(null);
+      } catch (err) {
+        console.error('Failed to fetch dealers:', err);
+        setError('Failed to load dealers. Please try again later.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDealers();
+  }, []);
+
   // Get current dealers for pagination
   const indexOfLastDealer = currentPage * dealersPerPage;
   const indexOfFirstDealer = indexOfLastDealer - dealersPerPage;
@@ -47,6 +66,38 @@ export default function DealersPage() {
     }
   };
 
+  if (loading) {
+    return (
+      <div className="w-full bg-whitesmoke text-gray-800 py-12 px-8">
+        <div className="container mx-auto flex justify-center items-center min-h-[60vh]">
+          <div className="text-center">
+            <div className="w-16 h-16 border-4 border-[#c1ff72] border-t-[#272D3C] rounded-full animate-spin mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading dealers...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="w-full bg-whitesmoke text-gray-800 py-12 px-8">
+        <div className="container mx-auto flex justify-center items-center min-h-[60vh]">
+          <div className="text-center p-8 bg-white rounded-lg shadow-md">
+            <h2 className="text-xl font-bold text-red-600 mb-4">Error</h2>
+            <p className="text-gray-700">{error}</p>
+            <button 
+              onClick={() => window.location.reload()}
+              className="mt-4 px-4 py-2 bg-[#272D3C] text-white rounded-lg hover:bg-[#1a1a1a] transition"
+            >
+              Try Again
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="w-full bg-whitesmoke text-gray-800 py-5 px-4 md:py-12 md:px-8">
       <div className="container mx-auto">
@@ -62,17 +113,23 @@ export default function DealersPage() {
           </p>
         </div>
         
-       {/* Dealers grid with consistent layout */}
-       <div className="grid grid-cols-1 px-4 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {currentDealers.map((dealer, index) => (
-            <DealerCard
-              key={index}
-              dealerImageSrc={dealer.imageSrc}
-              dealershipName={dealer.name}
-              location={dealer.location}
-              dealershipPageUrl={dealer.pageUrl}
-            />
-          ))}
+        {/* Dealers grid with consistent layout */}
+        <div className="grid grid-cols-1 px-4 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {dealers.length > 0 ? (
+            currentDealers.map((dealer, index) => (
+              <DealerCard
+                key={index}
+                dealerImageSrc={dealer.imageSrc}
+                dealershipName={dealer.name}
+                location={dealer.location}
+                dealershipPageUrl={dealer.pageUrl}
+              />
+            ))
+          ) : (
+            <div className="col-span-full text-center py-10">
+              <p className="text-gray-500">No dealers found.</p>
+            </div>
+          )}
         </div>
 
         {/* Pagination controls */}
