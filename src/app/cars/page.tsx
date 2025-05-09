@@ -1,12 +1,17 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import CarCard from "@/components/carcard";
-import { searchCars, type Car, type SearchFilters } from "@/app/services/api";
+import { getAllCars, type Car, type PaginatedCarResponse } from "@/app/services/api";
+import dynamic from 'next/dynamic';
+
+// Dynamically import the CarCard component
+const CarCard = dynamic(() => import("@/components/carcard"), {
+  loading: () => <div className="bg-white rounded-xl h-80 animate-pulse"></div>,
+});
 
 function Cars() {
   const [searchQuery, setSearchQuery] = useState("");
-  const [priceFilter, setpriceFilter] = useState("");
+  const [priceFilter, setPriceFilter] = useState("");
   const [selectedBrand, setSelectedBrand] = useState("");
   const [minYear, setMinYear] = useState("");
   const [maxYear, setMaxYear] = useState("");
@@ -48,22 +53,23 @@ function Cars() {
   const getPriceRangeFromFilter = (filterValue: string): { min: number, max: number } => {
     if (!filterValue) return { min: 0, max: 0 };
     
-    const [minStr, maxStr] = filterValue.split("-").map(range => range.trim());
+    const parts = filterValue.split("-").map(part => part.trim());
     
     let min = 0;
     let max = 0;
     
-    if (minStr) {
-      min = parseFloat(minStr.replace(/[KM]/g, "")) * 
-        (minStr.includes("M") ? 1000000 : (minStr.includes("K") ? 1000 : 1));
+    if (parts[0]) {
+      // Convert "500K" to 500000, "1M" to 1000000, etc.
+      min = parseFloat(parts[0].replace(/[KM]/g, "")) * 
+        (parts[0].includes("M") ? 1000000 : (parts[0].includes("K") ? 1000 : 1));
     }
     
-    if (maxStr) {
-      if (maxStr.includes("Above")) {
+    if (parts[1]) {
+      if (parts[1].includes("Above")) {
         max = 999999999; // Essentially no upper limit
       } else {
-        max = parseFloat(maxStr.replace(/[KM]/g, "")) * 
-          (maxStr.includes("M") ? 1000000 : (maxStr.includes("K") ? 1000 : 1));
+        max = parseFloat(parts[1].replace(/[KM]/g, "")) * 
+          (parts[1].includes("M") ? 1000000 : (parts[1].includes("K") ? 1000 : 1));
       }
     }
     
@@ -77,11 +83,16 @@ function Cars() {
     
     try {
       // Build filters object
-      const filters: SearchFilters = {
+      const filters: Record<string, string | number> = {
         page: currentPage,
-        limit: carsPerPage,
-        query: searchQuery,
+        pageSize: carsPerPage,
+        status: 'Available' // Default to available cars
       };
+      
+      // Add query filter if provided (backend will need to handle this)
+      if (searchQuery) {
+        filters.query = searchQuery;
+      }
       
       // Add make filter if selected
       if (selectedBrand) {
@@ -89,26 +100,39 @@ function Cars() {
       }
       
       // Add year filters
-      if (minYear) filters.minYear = parseInt(minYear);
-      if (maxYear) filters.maxYear = parseInt(maxYear);
+      if (minYear && !isNaN(parseInt(minYear))) {
+        filters.minYear = parseInt(minYear);
+      }
+      
+      if (maxYear && !isNaN(parseInt(maxYear))) {
+        filters.maxYear = parseInt(maxYear);
+      }
       
       // Add price filters
       if (priceFilter) {
         const { min, max } = getPriceRangeFromFilter(priceFilter);
-        filters.minPrice = min || undefined;
-        filters.maxPrice = max || undefined;
+        if (min > 0) filters.minPrice = min;
+        if (max > 0) filters.maxPrice = max;
       } else {
         // Use custom price inputs if available
-        if (minPrice) filters.minPrice = parseInt(minPrice);
-        if (maxPrice) filters.maxPrice = parseInt(maxPrice);
+        if (minPrice && !isNaN(parseInt(minPrice))) {
+          filters.minPrice = parseInt(minPrice);
+        }
+        if (maxPrice && !isNaN(parseInt(maxPrice))) {
+          filters.maxPrice = parseInt(maxPrice);
+        }
       }
       
-      // Call the API
-      const response = await searchCars(filters);
+      console.log("Fetching with filters:", filters);
       
-      setCars(response.data);
-      setTotalCars(response.total);
-      setTotalPages(response.totalPages);
+      // Call the API
+      const response = await getAllCars(filters);
+      console.log("API response:", response);
+      
+      // Update states with response data
+      setCars(response.cars || []);
+      setTotalCars(response.total || 0);
+      setTotalPages(response.pages || 1);
     } catch (err) {
       console.error("Error fetching cars:", err);
       setError("Failed to load cars. Please try again later.");
@@ -118,20 +142,20 @@ function Cars() {
     }
   };
 
-  // Fetch cars when filters change
+  // Fetch cars when filters change or on initial load
   useEffect(() => {
     fetchCars();
-  }, [currentPage, searchQuery, priceFilter, selectedBrand, minYear, maxYear]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPage]); // Only re-fetch when page changes
   
   // Reset to page 1 when filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchQuery, priceFilter, selectedBrand, minYear, maxYear]);
+  }, [searchQuery, priceFilter, selectedBrand, minYear, maxYear, minPrice, maxPrice]);
 
   // Function to handle search button click
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    setCurrentPage(1);
     fetchCars();
   };
 
@@ -214,7 +238,7 @@ function Cars() {
                               ? "bg-[#272D3C] text-white"
                               : "bg-gray-50 hover:bg-[#c1ff72] hover:text-[#1a1a1a]"
                           }`}
-                          onClick={() => setpriceFilter(range)}
+                          onClick={() => setPriceFilter(range)}
                         >
                           {range}
                         </button>
@@ -341,6 +365,8 @@ function Cars() {
                     "Loading cars..."
                   ) : error ? (
                     "Error loading cars"
+                  ) : cars.length === 0 ? (
+                    "No cars found"
                   ) : (
                     `Showing ${(currentPage - 1) * carsPerPage + 1}-${
                       Math.min(currentPage * carsPerPage, totalCars)
@@ -370,17 +396,18 @@ function Cars() {
                 {cars.length > 0 ? (
                   cars.map((car) => (
                     <CarCard
-                      key={car.id}
-                      carImageSrc={car.imageUrl}
-                      carName={`${car.make} ${car.model}`}
-                      price={(car.price).toLocaleString()}
-                      carPageUrl={`/cars/${car.id}`}
-                      year={car.year.toString()}
-                      mileage={car.mileage ? car.mileage.toLocaleString() : '0'}
-                      transmission={car.transmission || 'N/A'}
-                      fuelType={car.fuelType || 'N/A'}
-                      engineSize={car.engineSize || 'N/A'}
+                      key={car._id || car.id || `${car.make}-${car.model}-${car.year}`}
+                      id={car._id || car.id || `${car.make}-${car.model}-${car.year}`}
+                      make={car.make || ""}
+                      model={car.model || ""}
+                      price={car.price || 0}
+                      year={car.year || 0}
+                      mileage={car.mileage || 0}
+                      transmission={car.transmission || "N/A"}
+                      fuelType={car.fuelType || "N/A"}
+                      engineSize={car.engineSize || "N/A"}
                       status={car.status || "Available"}
+                      images={car.images || []}
                     />
                   ))
                 ) : (

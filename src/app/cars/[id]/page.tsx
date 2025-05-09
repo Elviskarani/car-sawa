@@ -5,12 +5,13 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import ImageCarousel from "@/components/imagecarousel";
 import CarDetailsPage from "@/components/cardata";
-import CarDetails from "@/components/cardetails";
-import { getCarById, type Car } from "@/app/services/api";
+import CarDetails, { CarDetailsProps } from "@/components/cardetails";
+import { getCarById, type Car, getDealerById, type Dealer } from "@/app/services/api";
 
 export default function CarDetailsPageWrapper({ params }: { params: { id: string } }) {
   const { id } = params;
   const [car, setCar] = useState<Car | null>(null);
+  const [dealer, setDealer] = useState<Dealer | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -18,8 +19,20 @@ export default function CarDetailsPageWrapper({ params }: { params: { id: string
     const fetchCarDetails = async () => {
       try {
         setLoading(true);
+        // Fetch car data
         const carData = await getCarById(id);
         setCar(carData);
+        
+        // Fetch dealer data using the dealer ID from car data
+        if (carData && carData.dealer) {
+          try {
+            const dealerData = await getDealerById(typeof carData.dealer === 'string' ? carData.dealer : carData.dealer.id || carData.dealer._id);
+            setDealer(dealerData);
+          } catch (dealerErr) {
+            console.error("Error fetching dealer details:", dealerErr);
+            // Don't set the main error - we still have car data
+          }
+        }
       } catch (err) {
         console.error("Error fetching car details:", err);
         setError("Failed to load car details. Please try again later.");
@@ -83,40 +96,57 @@ export default function CarDetailsPageWrapper({ params }: { params: { id: string
   }
 
   // Create a local dealer image path for Next.js Image compatibility
-  const dealerImagePath = car.dealer.profileImage.startsWith("http") 
-    ? "/placeholder-image.webp" // Use a local fallback image for external URLs
-    : car.dealer.profileImage;
-
-  // Prepare data for CarDetailsPage component
-  const carDetailsProps = {
-    price: car.price,
-    yearOfManufacture: car.year,
-    currentLocation: car.dealer?.name || "Nairobi",
-    availability: car.status,
-    drive: car.bodyType || "4WD",
-    mileage: car.mileage || 0,
-    fuelType: car.fuelType || "Petrol",
-    horsePower: 200, // Default value as it's not in the car data
-    transmission: car.transmission || "Manual",
-    torque: 350, // Default value as it's not in the car data
-    aspiration: "Naturally Aspirated", // Default value as it's not in the car data
-    title: `${car.year} ${car.make} ${car.model}`,
-    dealer: {
-      id: car.dealer.id,
-      name: car.dealer.name,
-      image: dealerImagePath,
-      profileImage: dealerImagePath,
-      whatsappNumber: car.dealer.whatsappNumber || ""
-    },
-    dealerprofileImage: dealerImagePath,
-    dealerwhatsappNumber: car.dealer.whatsappNumber || ""
-  };
+  const dealerImagePath = dealer?.profileImage ? 
+    (dealer.profileImage.startsWith("http") ? "/placeholder-image.webp" : dealer.profileImage) 
+    : "/placeholder-image.webp";
 
   // Prepare images for the carousel
-  // If there's only one image, duplicate it to ensure the carousel has content
   const carImages = car.images && car.images.length > 0 
     ? car.images 
-    : (car.imageUrl ? [car.imageUrl] : []);
+    : ["/placeholder-image.webp"]; // Use placeholder if no images
+
+  // Prepare data for CarDetails component directly from API data
+  const carDetailsProps: CarDetailsProps = {
+    price: car.price || 0,
+    yearOfManufacture: car.year || new Date().getFullYear(),
+    currentLocation: dealer?.location || "Nairobi",
+    availability: car.status || "Available",
+    mileage: car.mileage || 0,
+    fuelType: car.fuelType || "N/A",
+    transmission: car.transmission || "N/A",
+    engineSize: car.engineSize || "N/A",
+    condition: car.condition || "N/A",
+    bodyType: car.bodyType || "N/A",
+    color: car.color || "N/A",
+    dealer: {
+      id: dealer?.id || dealer?._id || "unknown",
+      name: dealer?.name || "Unknown Dealer",
+      image: dealerImagePath,
+      profileImage: dealerImagePath,
+      whatsappNumber: dealer?.whatsapp || ""
+    }
+  };
+
+  // Prepare data for CarDetailsPage component (which might have a different interface)
+  const carDataPageProps = {
+    price: car.price || 0,
+    yearOfManufacture: car.year || new Date().getFullYear(),
+    currentLocation: dealer?.location || "Nairobi",
+    availability: car.status || "Available",
+    mileage: car.mileage || 0,
+    fuelType: car.fuelType || "Petrol",
+    transmission: car.transmission || "Manual",
+    title: `${car.year || ''} ${car.make || ''} ${car.model || ''}`.trim() || "Car Details",
+    dealer: {
+      id: dealer?.id || dealer?._id || "unknown",
+      name: dealer?.name || "Unknown Dealer",
+      image: dealerImagePath,
+      profileImage: dealerImagePath,
+      whatsappNumber: dealer?.whatsapp || ""
+    },
+    dealerprofileImage: dealerImagePath,
+    dealerwhatsappNumber: dealer?.whatsapp || ""
+  };
     
   return (
     <div className="min-h-screen bg-gray-50">
@@ -149,15 +179,9 @@ export default function CarDetailsPageWrapper({ params }: { params: { id: string
         <h1 className="text-2xl sm:text-3xl font-bold mb-6">{carDetailsProps.title}</h1>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
           <ImageCarousel images={carImages} />
-          <CarDetailsPage {...carDetailsProps} />
+          <CarDetailsPage {...carDataPageProps} />
           <CarDetails {...carDetailsProps} />
         </div>
-        {car.description && (
-          <div className="mt-8">
-            <h2 className="text-xl sm:text-2xl font-bold mb-4">Description</h2>
-            <p className="text-gray-700 leading-relaxed">{car.description}</p>
-          </div>
-        )}
       </div>
     </div>
   );

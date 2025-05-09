@@ -128,11 +128,11 @@ const CarTypeBrowser = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredCars.map((car) => (
                 <CarCard
-                  key={car.id}
-                  carImageSrc={car.imageUrl}
+                  key={car.name}
+                  carImageSrc={car.images[0]}
                   carName={`${car.make} ${car.model}`}
                   price={car.price.toLocaleString()}
-                  carPageUrl={`/cars/${car.id}`}
+                  carPageUrl={`/cars/${car.name}`}
                   year={car.year.toString()}
                   mileage={car.mileage ? car.mileage.toLocaleString() : '0'}
                   transmission={car.transmission}
@@ -140,7 +140,7 @@ const CarTypeBrowser = () => {
                   engineSize={car.engineSize}
                   status={car.status === "AVAILABLE" ? "Available" : "Sold"}
                   dealerLocation={car.dealer?.location}
-                  dealerWhatsappNumber={car.dealer?.whatsappNumber}
+                  dealerWhatsapp={car.dealer?.whatsapp}
                 />
               ))}
             </div>

@@ -2,119 +2,142 @@
 
 // Types
 export interface Car {
-    id: string;
-    make: string;
-    model: string;
-    year: number;
-    price: number;
-    description: string;
-    condition: string;
-    imageUrl: string;
-    images?: string[];
-    mileage?: number;
-    fuelType?: string;
-    transmission?: string;
-    engineSize?: string;
-    bodyType?: string;
-    status: string;
-    dealer: Dealer;
-  }
+  _id?: string;
+  id?: string;
+  dealer: string;
+  name: string;
+  make: string;
+  model: string;
+  year: number;
+  transmission: string;
+  engineSize: string;
+  condition: string;
+  price: number;
+  mileage: number;
+  fuelType: string;
+  bodyType: string;
+  color: string;
+  comfortFeatures: string[];
+  safetyFeatures: string[];
+  images: string[];
+  status: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
   
-  export interface Dealer {
-    id: string;
-    name: string;
-    location?: string;
-    profileImage: string;
-    whatsappNumber?: string;
-    verified?: boolean;
-  }
+export interface Dealer {
+  _id?: string;
+  id?: string;
+  name: string;
+  email: string;
+  password?: string;
+  phone: string;
+  whatsapp?: string;
+  location: string;
+  profileImage?: string;
+}
+
+export interface PaginatedCarResponse {
+  cars: Car[];
+  page: number;
+  pages: number;
+  total: number;
+}
+
+// API base URL - replace with your actual API URL
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://carsawa-backend-6zf3.onrender.com';
+
+// Helper function for API requests
+async function fetchApi<T>(endpoint: string, options?: RequestInit): Promise<T> {
+  const url = `${API_BASE_URL}/api${endpoint}`;
   
-  // API base URL - replace with your actual API URL
-  const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://api.yourcarsite.com';
+  const defaultOptions: RequestInit = {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    next: { revalidate: 60 }, 
+  };
   
-  // Helper function for API requests
-  async function fetchApi<T>(endpoint: string, options?: RequestInit): Promise<T> {
-    const url = `${API_BASE_URL}${endpoint}`;
-    
-    const defaultOptions: RequestInit = {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      next: { revalidate: 60 }, // Revalidate cache every 60 seconds
-    };
-    
+  try {
     const response = await fetch(url, { ...defaultOptions, ...options });
     
     if (!response.ok) {
-      throw new Error(`API error: ${response.status} ${response.statusText}`);
+      // Handle error response
+      const errorText = await response.text();
+      return Promise.reject(`API error: ${response.status} - ${errorText}`);
     }
     
-    return response.json();
+    return await response.json();
+  } catch (error) {
+    console.error(`API request failed for ${endpoint}:`, error);
+    return Promise.reject(error);
   }
+}
+
+// Car API functions
+export async function getAllCars(params?: Record<string, string | number>): Promise<PaginatedCarResponse> {
+  let queryString = '';
   
-  // Car API functions
-  export async function getAllCars(filters?: Record<string, string>): Promise<Car[]> {
-    let queryString = '';
-    
-    if (filters && Object.keys(filters).length > 0) {
-      const params = new URLSearchParams();
-      Object.entries(filters).forEach(([key, value]) => {
-        if (value) params.append(key, value);
-      });
-      queryString = `?${params.toString()}`;
-    }
-    
-    return fetchApi<Car[]>(`/cars${queryString}`);
-  }
-  
-  export async function getCarById(id: string): Promise<Car> {
-    return fetchApi<Car>(`/cars/${id}`);
-  }
-  
-  export async function getCarsByDealerId(dealerId: string): Promise<Car[]> {
-    return fetchApi<Car[]>(`/cars?dealerId=${dealerId}`);
-  }
-  
-  // Dealer API functions
-  export async function getAllDealers(): Promise<Dealer[]> {
-    return fetchApi<Dealer[]>('/dealers');
-  }
-  
-  export async function getDealerById(id: string): Promise<Dealer> {
-    return fetchApi<Dealer>(`/dealers/${id}`);
-  }
-  
-  // Search functions
-  export interface SearchFilters {
-    query?: string;
-    minPrice?: number;
-    maxPrice?: number;
-    make?: string;
-    minYear?: number;
-    maxYear?: number;
-    transmission?: string;
-    fuelType?: string;
-    bodyType?: string;
-    page?: number;
-    limit?: number;
-  }
-  
-  export interface PaginatedResponse<T> {
-    data: T[];
-    total: number;
-    page: number;
-    limit: number;
-    totalPages: number;
-  }
-  
-  export async function searchCars(filters: SearchFilters): Promise<PaginatedResponse<Car>> {
-    const params = new URLSearchParams();
-    
-    Object.entries(filters).forEach(([key, value]) => {
+  if (params && Object.keys(params).length > 0) {
+    const searchParams = new URLSearchParams();
+    Object.entries(params).forEach(([key, value]) => {
       if (value !== undefined && value !== null && value !== '') {
-        params.append(key, String(value));
+        searchParams.append(key, String(value));
       }
     });
-    
-    return fetchApi<PaginatedResponse<Car>>(`/cars/search?${params.toString()}`);
+    queryString = `?${searchParams.toString()}`;
   }
+  
+  return fetchApi<PaginatedCarResponse>(`/cars${queryString}`);
+}
+
+export async function getCarById(id: string): Promise<Car> {
+  return fetchApi<Car>(`/cars/${id}`);
+}
+
+export async function getCarsByDealer(dealerId: string): Promise<PaginatedCarResponse> {
+  return fetchApi<PaginatedCarResponse>(`/cars?dealer=${dealerId}`);
+}
+
+// Dealer API functions - Read Only
+export async function getAllDealers(): Promise<Dealer[]> {
+  return fetchApi<Dealer[]>('/dealers');
+}
+
+export async function getDealerById(id: string): Promise<Dealer> {
+  return fetchApi<Dealer>(`/dealers/${id}`);
+}
+
+// Search cars with filters matching backend expectations
+export interface SearchFilters {
+  make?: string;
+  model?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  minYear?: number;
+  maxYear?: number;
+  transmission?: string;
+  condition?: string;
+  fuelType?: string;
+  bodyType?: string;
+  status?: string;
+  sort?: string;
+  page?: number;
+  pageSize?: number;
+}
+
+export async function searchCars(filters: SearchFilters): Promise<PaginatedCarResponse> {
+  const params = new URLSearchParams();
+  
+  Object.entries(filters).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== '') {
+      params.append(key, String(value));
+    }
+  });
+  
+  const queryString = params.toString();
+  console.log(`Searching cars with query: ${queryString}`);
+  
+  // Use the main /cars endpoint with filters instead of a separate /search endpoint
+  return fetchApi<PaginatedCarResponse>(`/cars?${queryString}`);
+}

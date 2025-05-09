@@ -119,19 +119,9 @@ export default function DealerDetailPage() {
               priority
               className="w-[70px] h-[70px] object-contain shadow-lg bg-white rounded-full"
             />
-            {dealer.verified && (
-              <span className="absolute -top-1 -right-1 bg-[#c1ff72] p-1 rounded-full">
-                <FiCheck className="w-4 h-4 text-[#272D3C]" />
-              </span>
-            )}
           </div>
           <div className="ml-4">
             <h1 className="text-xs md:text-2xl font-bold">{dealer.name}</h1>
-            {dealer.verified && (
-              <span className="text-xs text-gray-600 flex items-center mt-1">
-                <FiCheck className="w-3 h-3 text-green-500 mr-1" /> Verified Dealer
-              </span>
-            )}
           </div>
         </div>
 
@@ -153,7 +143,7 @@ export default function DealerDetailPage() {
             </div>
             <div className="ml-3">
               <p className="text-xs text-gray-500">Contact</p>
-              <p className="font-medium">{dealer.whatsappNumber || "Not available"}</p>
+              <p className="font-medium">{dealer.whatsapp || "Not available"}</p>
             </div>
           </div>
         </div>
@@ -169,11 +159,11 @@ export default function DealerDetailPage() {
             {dealerCars.length > 0 ? (
               dealerCars.map((car) => (
                 <CarCard 
-                  key={car.id}
-                  carImageSrc={car.imageUrl}
+                  key={car.name}
+                  carImageSrc={car.images[0]}
                   carName={`${car.make} ${car.model}`}
                   price={car.price.toString()}
-                  carPageUrl={`/cars/${car.id}`}
+                  carPageUrl={`/cars/${car.name}`}
                   year={car.year?.toString()}
                   mileage={car.mileage?.toString()}
                   transmission={car.transmission}
