@@ -1,159 +1,116 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from 'react';
-import { FaArrowRight } from "react-icons/fa6";
-import { FaArrowLeft } from "react-icons/fa";
+import React, { useState } from 'react';
 import Image from 'next/image';
+import { Car } from '@/app/services/api';
 
 interface ImageCarouselProps {
   images: string[];
 }
 
-export default function ImageCarousel({ images }: ImageCarouselProps) {
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [thumbnailErrors, setThumbnailErrors] = useState<Record<number, boolean>>({});
-  const carouselRef = useRef<HTMLDivElement>(null);
-  const startXRef = useRef<number>(0);
+const ImageCarousel: React.FC<ImageCarouselProps> = ({ images }) => {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  
+  // Ensure images array has at least one item
+  const carImages = images && images.length > 0 
+    ? images 
+    : ["/placeholder-image.webp"];
 
-  // Generate 10 image slots, using provided images or placeholders
-  const carouselImages = [
-    ...images.slice(0, 10),
-    ...Array(Math.max(0, 10 - images.length)).fill('/placeholder-image.webp'),
-  ];
-
-  const handleNextImage = () => {
-    setCurrentImageIndex((prevIndex) => (prevIndex === 9 ? 0 : prevIndex + 1));
+  const goToNextSlide = () => {
+    setCurrentIndex((prevIndex) => (prevIndex + 1) % carImages.length);
   };
 
-  const handlePrevImage = () => {
-    setCurrentImageIndex((prevIndex) => (prevIndex === 0 ? 9 : prevIndex - 1));
-  };
-
-  // Touch event handlers for swipe navigation
-  const handleTouchStart = (e: React.TouchEvent) => {
-    startXRef.current = e.touches[0].clientX;
-  };
-
-  const handleTouchEnd = (e: React.TouchEvent) => {
-    const endX = e.changedTouches[0].clientX;
-    const deltaX = startXRef.current - endX;
-    const containerWidth = carouselRef.current?.offsetWidth || 0;
-    const threshold = containerWidth * 0.25; // 25% of container width
-
-    if (deltaX > threshold) {
-      handleNextImage(); // Swipe left
-    } else if (deltaX < -threshold) {
-      handlePrevImage(); // Swipe right
-    }
-  };
-
-  // Prevent page scrolling during swipe
-  useEffect(() => {
-    const handleTouchMove = (e: TouchEvent) => {
-      e.preventDefault();
-    };
-
-    const carouselElement = carouselRef.current;
-    if (carouselElement) {
-      carouselElement.addEventListener('touchmove', handleTouchMove, { passive: false });
-    }
-
-    return () => {
-      if (carouselElement) {
-        carouselElement.removeEventListener('touchmove', handleTouchMove);
-      }
-    };
-  }, []);
-
-  const handleThumbnailError = (index: number) => {
-    setThumbnailErrors(prev => ({ ...prev, [index]: true }));
-  };
-
-  const renderImage = (imageSrc: string, index: number) => {
-    if (imageSrc === '/placeholder-image.webp') {
-      return (
-        <div
-          key={index}
-          className="w-full h-full bg-gray-200 flex items-center justify-center border-2 border-dashed border-gray-400"
-        >
-          <p className="text-gray-600 text-xl text-center">Image Not Found</p>
-        </div>
-      );
-    }
-
-    return (
-      <Image
-        src={imageSrc}
-        alt={`Image ${index + 1}`}
-        fill
-        className="object-cover"
-        onError={(e) => {
-          (e.target as HTMLImageElement).src = '/placeholder-image.webp';
-        }}
-      />
+  const goToPrevSlide = () => {
+    setCurrentIndex((prevIndex) => 
+      prevIndex === 0 ? carImages.length - 1 : prevIndex - 1
     );
   };
 
   return (
-    <div className="relative w-full max-w-xl mx-auto">
+    <div className="relative w-full h-64 sm:h-80 md:h-96 mb-4">
       {/* Main Image */}
-      <div
-        ref={carouselRef}
-        onTouchStart={handleTouchStart}
-        onTouchEnd={handleTouchEnd}
-        className="relative aspect-[4/3] overflow-hidden rounded-lg"
-      >
-        {renderImage(carouselImages[currentImageIndex], currentImageIndex)}
-
-        {/* Previous Button */}
-        <button
-          onClick={handlePrevImage}
-          className="absolute top-1/2 left-2 -translate-y-1/2 p-2 rounded-full transition-colors flex items-center justify-center w-12 h-12"
-        >
-         <FaArrowLeft className="w-15 text-white hover:text-[#25D366] hover:scale-110 h-15" />
-        </button>
-
-        {/* Next Button */}
-        <button
-          onClick={handleNextImage}
-          className="absolute top-1/2 right-2 -translate-y-1/2 p-2 rounded-full transition-colors flex items-center justify-center w-12 h-12"
-        >
-          <FaArrowRight className="w-15 text-white hover:text-[#25D366] hover:scale-110 h-15" />
-        </button>
+      <div className="relative w-full h-full">
+        <Image
+          src={carImages[currentIndex]}
+          alt={`Car image ${currentIndex + 1}`}
+          className="object-cover rounded-lg"
+          fill
+          priority
+        />
       </div>
-
-      {/* Image Counter */}
-      <div className="text-center mt-2 text-sm text-gray-500">
-        {currentImageIndex + 1} / 10
-      </div>
-
-      {/* Thumbnail Preview */}
-      <div className="flex overflow-x-auto space-x-2 mt-2">
-        {carouselImages.map((image, index) => (
+      
+      {/* Navigation arrows */}
+      {carImages.length > 1 && (
+        <>
           <button
-            key={index}
-            onClick={() => setCurrentImageIndex(index)}
-            className={`w-12 h-12 flex-shrink-0 rounded relative ${
-              index === currentImageIndex ? 'border-2 border-blue-500' : 'opacity-50 hover:opacity-100'
-            }`}
+            onClick={goToPrevSlide}
+            className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full"
           >
-            {image === '/placeholder-image.webp' || thumbnailErrors[index] ? (
-              <div className="w-full h-full bg-gray-200 flex items-center justify-center rounded">
-                <p className="text-xs text-gray-500">N/A</p>
-              </div>
-            ) : (
+            <svg 
+              className="w-6 h-6" 
+              fill="none" 
+              stroke="currentColor" 
+              viewBox="0 0 24 24" 
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path 
+                strokeLinecap="round" 
+                strokeLinejoin="round" 
+                strokeWidth={2} 
+                d="M15 19l-7-7 7-7" 
+              />
+            </svg>
+          </button>
+          <button
+            onClick={goToNextSlide}
+            className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full"
+          >
+            <svg 
+              className="w-6 h-6" 
+              fill="none" 
+              stroke="currentColor"
+              viewBox="0 0 24 24" 
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path 
+                strokeLinecap="round" 
+                strokeLinejoin="round" 
+                strokeWidth={2} 
+                d="M9 5l7 7-7 7" 
+              />
+            </svg>
+          </button>
+        </>
+      )}
+      
+      {/* Image counter */}
+      <div className="absolute bottom-2 right-2 bg-black bg-opacity-50 text-white px-2 py-1 rounded-md text-sm">
+        {currentIndex + 1} / {carImages.length}
+      </div>
+      
+      {/* Thumbnail preview (optional for larger screens) */}
+      {carImages.length > 1 && (
+        <div className="hidden md:flex mt-2 space-x-2 overflow-x-auto">
+          {carImages.map((image, index) => (
+            <div 
+              key={index}
+              className={`relative w-16 h-16 cursor-pointer ${
+                index === currentIndex ? 'border-2 border-[#25D366]' : ''
+              }`}
+              onClick={() => setCurrentIndex(index)}
+            >
               <Image
                 src={image}
                 alt={`Thumbnail ${index + 1}`}
                 className="object-cover rounded"
                 fill
-                sizes="48px"
-                onError={() => handleThumbnailError(index)}
               />
-            )}
-          </button>
-        ))}
-      </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
-}
+};
+
+export default ImageCarousel;

@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useParams, notFound } from 'next/navigation';
-import { getDealerById, getCarsByDealerId, Car, Dealer } from '@/app/services/api';
+import { getDealerById, getCarsByDealer, Car, Dealer } from '@/app/services/api';
 import CarCard from "@/components/carcard";
 import { FiPhone, FiMapPin, FiCheck } from 'react-icons/fi';
 

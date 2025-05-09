@@ -1,45 +1,15 @@
 import React from 'react';
+import { Car } from '@/app/services/api';
 
-// Define an interface for the car details that matches the API structure
+// Define the props interface that matches the API structure more closely
 export interface CarDetailsProps {
-  price: number;
-  yearOfManufacture: number;
-  currentLocation: string;
-  availability: string;
-  mileage: number;
-  fuelType: string;
-  transmission: string;
-  engineSize: string;
-  condition: string;
-  bodyType: string;
-  color: string;
-  images: string[];
-  dealer: {
-    id: string;
-    name: string;
-    image: string;
-    profileImage: string;
-    whatsappNumber?: string;
-  };
- 
+  car: Car;
+  currentLocation?: string; // Optional field from dealer location
 }
 
-const CarDetails: React.FC<CarDetailsProps> = ({
-  price,
-  yearOfManufacture,
-  currentLocation,
-  availability,
-  mileage,
-  fuelType,
-  transmission,
-  engineSize,
-  condition,
-  bodyType,
-  color,
- 
-}) => {
+const CarDetails: React.FC<CarDetailsProps> = ({ car, currentLocation }) => {
   // Format price with commas and currency
-  const formattedPrice = price ? price.toLocaleString('en-KE', {
+  const formattedPrice = car.price ? car.price.toLocaleString('en-KE', {
     style: 'currency',
     currency: 'KES'
   }) : 'Price not available';
@@ -54,17 +24,16 @@ const CarDetails: React.FC<CarDetailsProps> = ({
       {/* Details Grid */}
       <div className="p-4 space-y-2">
         {[
-          { label: 'Year of manufacture', value: yearOfManufacture || 'N/A' },
+          { label: 'Year of manufacture', value: car.year || 'N/A' },
           { label: 'Current Location', value: currentLocation || 'N/A' },
-          { label: 'Availability', value: availability || 'N/A' },
-          { label: 'Mileage', value: mileage ? `${mileage.toLocaleString()} KM` : 'N/A' },
-          { label: 'Fuel type', value: fuelType || 'N/A' },
-          { label: 'Transmission', value: transmission || 'N/A' },
-          { label: 'engineSize', value: engineSize || 'N/A' },
-          { label: 'condition', value: condition || 'N/A' },
-          { label: 'bodyType', value: bodyType || 'N/A' },
-          { label: 'color', value: color || 'N/A' },
-        
+          { label: 'Availability', value: car.status || 'N/A' },
+          { label: 'Mileage', value: car.mileage ? `${car.mileage.toLocaleString()} KM` : 'N/A' },
+          { label: 'Fuel type', value: car.fuelType || 'N/A' },
+          { label: 'Transmission', value: car.transmission || 'N/A' },
+          { label: 'Engine Size', value: car.engineSize || 'N/A' },
+          { label: 'Condition', value: car.condition || 'N/A' },
+          { label: 'Body Type', value: car.bodyType || 'N/A' },
+          { label: 'Color', value: car.color || 'N/A' },
         ].map(({ label, value }) => (
           <div 
             key={label} 

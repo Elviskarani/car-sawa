@@ -5,7 +5,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import ImageCarousel from "@/components/imagecarousel";
 import CarDetailsPage from "@/components/cardata";
-import CarDetails, { CarDetailsProps } from "@/components/cardetails";
+import CarDetails from "@/components/cardetails";
 import { getCarById, type Car, getDealerById, type Dealer } from "@/app/services/api";
 
 export default function CarDetailsPageWrapper({ params }: { params: { id: string } }) {
@@ -26,7 +26,11 @@ export default function CarDetailsPageWrapper({ params }: { params: { id: string
         // Fetch dealer data using the dealer ID from car data
         if (carData && carData.dealer) {
           try {
-            const dealerData = await getDealerById(typeof carData.dealer === 'string' ? carData.dealer : carData.dealer.id || carData.dealer._id);
+            const dealerId = typeof carData.dealer === 'string' 
+              ? carData.dealer 
+              : carData.dealer.id || carData.dealer._id;
+              
+            const dealerData = await getDealerById(dealerId);
             setDealer(dealerData);
           } catch (dealerErr) {
             console.error("Error fetching dealer details:", dealerErr);
@@ -95,59 +99,11 @@ export default function CarDetailsPageWrapper({ params }: { params: { id: string
     );
   }
 
-  // Create a local dealer image path for Next.js Image compatibility
-  const dealerImagePath = dealer?.profileImage ? 
-    (dealer.profileImage.startsWith("http") ? "/placeholder-image.webp" : dealer.profileImage) 
-    : "/placeholder-image.webp";
-
   // Prepare images for the carousel
   const carImages = car.images && car.images.length > 0 
     ? car.images 
     : ["/placeholder-image.webp"]; // Use placeholder if no images
 
-  // Prepare data for CarDetails component directly from API data
-  const carDetailsProps: CarDetailsProps = {
-    price: car.price || 0,
-    yearOfManufacture: car.year || new Date().getFullYear(),
-    currentLocation: dealer?.location || "Nairobi",
-    availability: car.status || "Available",
-    mileage: car.mileage || 0,
-    fuelType: car.fuelType || "N/A",
-    transmission: car.transmission || "N/A",
-    engineSize: car.engineSize || "N/A",
-    condition: car.condition || "N/A",
-    bodyType: car.bodyType || "N/A",
-    color: car.color || "N/A",
-    dealer: {
-      id: dealer?.id || dealer?._id || "unknown",
-      name: dealer?.name || "Unknown Dealer",
-      image: dealerImagePath,
-      profileImage: dealerImagePath,
-      whatsappNumber: dealer?.whatsapp || ""
-    }
-  };
-
-  // Prepare data for CarDetailsPage component (which might have a different interface)
-  const carDataPageProps = {
-    price: car.price || 0,
-    yearOfManufacture: car.year || new Date().getFullYear(),
-    currentLocation: dealer?.location || "Nairobi",
-    availability: car.status || "Available",
-    mileage: car.mileage || 0,
-    fuelType: car.fuelType || "Petrol",
-    transmission: car.transmission || "Manual",
-    title: `${car.year || ''} ${car.make || ''} ${car.model || ''}`.trim() || "Car Details",
-    dealer: {
-      id: dealer?.id || dealer?._id || "unknown",
-      name: dealer?.name || "Unknown Dealer",
-      image: dealerImagePath,
-      profileImage: dealerImagePath,
-      whatsappNumber: dealer?.whatsapp || ""
-    },
-    dealerprofileImage: dealerImagePath,
-    dealerwhatsappNumber: dealer?.whatsapp || ""
-  };
-    
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Navigation Bar */}
@@ -176,11 +132,25 @@ export default function CarDetailsPageWrapper({ params }: { params: { id: string
       </div>
 
       <div className="container mx-auto px-4 py-8">
-        <h1 className="text-2xl sm:text-3xl font-bold mb-6">{carDetailsProps.title}</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold mb-6">
+          {`${car.year || ''} ${car.make || ''} ${car.model || ''}`.trim() || "Car Details"}
+        </h1>
+        
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
+          {/* Image Carousel Component */}
           <ImageCarousel images={carImages} />
-          <CarDetailsPage {...carDataPageProps} />
-          <CarDetails {...carDetailsProps} />
+          
+          {/* Car Data Component - shows detailed information */}
+          <CarDetailsPage 
+            car={car} 
+            dealer={dealer} 
+          />
+          
+          {/* Car Details Component - shows specifications */}
+          <CarDetails 
+            car={car}
+            currentLocation={dealer?.location || "N/A"}
+          />
         </div>
       </div>
     </div>
