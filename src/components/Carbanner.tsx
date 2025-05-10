@@ -27,10 +27,10 @@ export default function CarPlatformBanner() {
       {/* Car Image */}
       <div className="relative w-full md:w-1/2 h-80">
         <Image 
-          src="/image.png"  
+          src="/porsche2.png"  
           alt="Blue Sports Car" 
           layout="fill"
-          objectFit="contain"
+          objectFit="cover"
           className="z-10"
         />
       </div>

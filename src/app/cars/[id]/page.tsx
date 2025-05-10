@@ -2,53 +2,96 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import ImageCarousel from "@/components/imagecarousel";
-import CarDetailsPage from "@/components/cardata";
-import CarDetails from "@/components/cardetails";
+import CarDetailsPage from "@/components/cardata"; // Your component for car data display
 import { getCarById, type Car, getDealerById, type Dealer } from "@/app/services/api";
 
-export default function CarDetailsPageWrapper({ params }: { params: { id: string } }) {
-  const { id } = params;
+export default function CarDetailsPageWrapper() {
+  const params = useParams();
+
+  // Extract the 'id' from params. It can be a string or string[].
+  const idFromParams = typeof params.id === 'string' ? params.id : Array.isArray(params.id) ? params.id[0] : null;
+
   const [car, setCar] = useState<Car | null>(null);
   const [dealer, setDealer] = useState<Dealer | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [debugInfo, setDebugInfo] = useState<string>(''); // For debugging
 
   useEffect(() => {
+    if (!idFromParams) {
+      setError("Car ID is missing or invalid.");
+      setLoading(false);
+      return;
+    }
+
     const fetchCarDetails = async () => {
+      setLoading(true);
+      setError(null);
       try {
-        setLoading(true);
-        // Fetch car data
-        const carData = await getCarById(id);
-        setCar(carData);
+        console.log(`Fetching car with ID: ${idFromParams}`);
+        const carData = await getCarById(idFromParams);
         
-        // Fetch dealer data using the dealer ID from car data
-        if (carData && carData.dealer) {
-          try {
-            const dealerId = typeof carData.dealer === 'string' 
-              ? carData.dealer 
-              : carData.dealer.id || carData.dealer._id;
-              
-            const dealerData = await getDealerById(dealerId);
-            setDealer(dealerData);
-          } catch (dealerErr) {
-            console.error("Error fetching dealer details:", dealerErr);
-            // Don't set the main error - we still have car data
+        if (!carData) {
+          setError(`Car with ID ${idFromParams} not found.`);
+          setCar(null);
+        } else {
+          setCar(carData);
+          setDebugInfo(`Car data loaded. Dealer reference: ${JSON.stringify(carData.dealer)}`);
+          
+          // Enhanced dealer fetching logic with better logging
+          if (carData.dealer) {
+            let dealerId: string;
+            
+            // Handle the case where dealer could be an object or string
+            if (typeof carData.dealer === 'string') {
+              dealerId = carData.dealer.trim();
+              setDebugInfo(prev => `${prev}\nDealer ID (string): "${dealerId}"`);
+            } else if (typeof carData.dealer === 'object' && carData.dealer !== null) {
+              // If dealer is an object with _id or id property
+              dealerId = (carData.dealer._id || carData.dealer.id || '').toString().trim();
+              setDebugInfo(prev => `${prev}\nDealer ID (from object): "${dealerId}"`);
+            } else {
+              setDebugInfo(prev => `${prev}\nUnable to extract dealer ID, type: ${typeof carData.dealer}`);
+              return;
+            }
+            
+            if (dealerId) {
+              try {
+                console.log(`Fetching dealer with ID: ${dealerId}`);
+                const dealerData = await getDealerById(dealerId);
+                setDealer(dealerData);
+                setDebugInfo(prev => `${prev}\nDealer data loaded: ${JSON.stringify(dealerData)}`);
+              } catch (dealerErr) {
+                console.error(`Error fetching dealer details for dealer ID "${dealerId}":`, dealerErr);
+                setDebugInfo(prev => `${prev}\nError fetching dealer: ${dealerErr}`);
+              }
+            } else {
+              setDebugInfo(prev => `${prev}\nDealer ID was empty after trimming.`);
+            }
+          } else {
+            setDebugInfo(prev => `${prev}\nNo dealer reference found in car data.`);
           }
         }
       } catch (err) {
         console.error("Error fetching car details:", err);
-        setError("Failed to load car details. Please try again later.");
+        setDebugInfo(`Error: ${err instanceof Error ? err.message : String(err)}`);
+        
+        if (err instanceof Error && (err.message.toLowerCase().includes("not found") || err.message.includes("404"))) {
+            setError(`Car with ID ${idFromParams} not found.`);
+        } else {
+            setError("Failed to load car details. Please try again later.");
+        }
+        setCar(null); 
       } finally {
         setLoading(false);
       }
     };
 
     fetchCarDetails();
-  }, [id]);
+  }, [idFromParams]);
 
-  // Show loading state
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex justify-center items-center">
@@ -57,7 +100,6 @@ export default function CarDetailsPageWrapper({ params }: { params: { id: string
     );
   }
 
-  // Show error state
   if (error || !car) {
     return (
       <div className="min-h-screen bg-gray-50">
@@ -67,64 +109,48 @@ export default function CarDetailsPageWrapper({ params }: { params: { id: string
               href="/cars"
               className="inline-flex items-center text-white hover:text-[#c1ff72] transition-colors"
             >
-              <svg
-                className="w-5 h-5 mr-2"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M15 19l-7-7 7-7"
-                />
+              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
               Back to Cars
             </Link>
           </div>
         </div>
-
         <div className="container mx-auto px-4 py-12 text-center">
           <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6 inline-block">
-            {error || "Car not found"}
+            {error || "Car not found."}
           </div>
           <p className="mt-4">
             <Link href="/cars" className="text-blue-600 hover:underline">
               Browse all cars
             </Link>
           </p>
+          
+          {/* Display debug info in development */}
+          {process.env.NODE_ENV === 'development' && debugInfo && (
+            <div className="mt-8 p-4 bg-gray-100 rounded-lg text-left">
+              <h3 className="font-bold mb-2">Debug Info:</h3>
+              <pre className="whitespace-pre-wrap text-xs">{debugInfo}</pre>
+            </div>
+          )}
         </div>
       </div>
     );
   }
 
-  // Prepare images for the carousel
-  const carImages = car.images && car.images.length > 0 
-    ? car.images 
-    : ["/placeholder-image.webp"]; // Use placeholder if no images
+  // If car data is available, render the details
+  const carImages = car.images && car.images.length > 0 ? car.images : ["/placeholder-image.webp"];
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Navigation Bar */}
       <div className="bg-[#272D3C] text-white py-4">
         <div className="container mx-auto px-4">
           <Link
             href="/cars"
             className="inline-flex items-center text-white hover:text-[#c1ff72] transition-colors"
           >
-            <svg
-              className="w-5 h-5 mr-2"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M15 19l-7-7 7-7"
-              />
+            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
             Back to Cars
           </Link>
@@ -136,21 +162,19 @@ export default function CarDetailsPageWrapper({ params }: { params: { id: string
           {`${car.year || ''} ${car.make || ''} ${car.model || ''}`.trim() || "Car Details"}
         </h1>
         
+       
+        
+        
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
-          {/* Image Carousel Component */}
           <ImageCarousel images={carImages} />
           
-          {/* Car Data Component - shows detailed information */}
+          {/* This is your CarDetailsPage component that displays comfort/safety features */}
           <CarDetailsPage 
             car={car} 
             dealer={dealer} 
           />
           
-          {/* Car Details Component - shows specifications */}
-          <CarDetails 
-            car={car}
-            currentLocation={dealer?.location || "N/A"}
-          />
+         
         </div>
       </div>
     </div>

@@ -3,8 +3,8 @@
 // Types
 export interface Car {
   _id?: string;
-  id?: string;
-  dealer: string;
+  id ?: string;
+  dealer: string | { _id?: string; id?: string; [key: string]: any };
   name: string;
   make: string;
   model: string;
@@ -26,19 +26,27 @@ export interface Car {
 }
   
 export interface Dealer {
-  _id?: string;
-  id?: string;
+  _id: string; 
+  id?: string; 
   name: string;
   email: string;
-  password?: string;
   phone: string;
-  whatsapp?: string;
+  whatsapp: string; 
   location: string;
   profileImage?: string;
+
 }
 
 export interface PaginatedCarResponse {
   cars: Car[];
+  page: number;
+  pages: number;
+  total: number;
+}
+
+// NEW: Interface for paginated dealer response from the backend
+export interface PaginatedDealerResponse {
+  dealers: Dealer[];
   page: number;
   pages: number;
   total: number;
@@ -95,16 +103,42 @@ export async function getCarById(id: string): Promise<Car> {
   return fetchApi<Car>(`/cars/${id}`);
 }
 
-export async function getCarsByDealer(dealerId: string): Promise<PaginatedCarResponse> {
-  return fetchApi<PaginatedCarResponse>(`/cars?dealer=${dealerId}`);
+// Updated to match backend controller for getting cars by dealer
+export async function getCarsByDealer(
+  dealerId: string,
+  params?: { page?: number; pageSize?: number; status?: string }
+): Promise<PaginatedCarResponse> {
+  if (!dealerId) {
+    return Promise.reject('Dealer ID cannot be empty for getCarsByDealer');
+  }
+  const queryParams = new URLSearchParams();
+  if (params) {
+    if (params.page) queryParams.append('page', String(params.page));
+    if (params.pageSize) queryParams.append('pageSize', String(params.pageSize));
+    if (params.status) queryParams.append('status', String(params.status));
+  }
+  const queryString = queryParams.toString() ? `?${queryParams.toString()}` : '';
+  return fetchApi<PaginatedCarResponse>(`/dealers/${dealerId}/cars${queryString}`);
 }
 
-// Dealer API functions - Read Only
-export async function getAllDealers(): Promise<Dealer[]> {
-  return fetchApi<Dealer[]>('/dealers');
+
+// MODIFIED: getAllDealers to support pagination and use PaginatedDealerResponse
+export async function getAllDealers(params?: { page?: number; pageSize?: number }): Promise<PaginatedDealerResponse> {
+  const searchParams = new URLSearchParams();
+  if (params?.page) {
+    searchParams.append('page', String(params.page));
+  }
+  if (params?.pageSize) {
+    searchParams.append('pageSize', String(params.pageSize));
+  }
+  const queryString = searchParams.toString() ? `?${searchParams.toString()}` : '';
+  return fetchApi<PaginatedDealerResponse>(`/dealers${queryString}`);
 }
 
 export async function getDealerById(id: string): Promise<Dealer> {
+  if (!id) {
+    return Promise.reject('Dealer ID cannot be empty');
+  }
   return fetchApi<Dealer>(`/dealers/${id}`);
 }
 
@@ -128,16 +162,12 @@ export interface SearchFilters {
 
 export async function searchCars(filters: SearchFilters): Promise<PaginatedCarResponse> {
   const params = new URLSearchParams();
-  
   Object.entries(filters).forEach(([key, value]) => {
     if (value !== undefined && value !== null && value !== '') {
       params.append(key, String(value));
     }
   });
-  
   const queryString = params.toString();
-  console.log(`Searching cars with query: ${queryString}`);
-  
-  // Use the main /cars endpoint with filters instead of a separate /search endpoint
+  console.log(`Searching cars with query: /cars?${queryString}`);
   return fetchApi<PaginatedCarResponse>(`/cars?${queryString}`);
 }

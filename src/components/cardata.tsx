@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { FaWhatsapp, FaPhoneAlt, FaArrowRight, FaTimes } from 'react-icons/fa';
+import { FaWhatsapp, FaPhoneAlt, FaArrowRight, FaTimes, FaUser, FaMapMarkerAlt, FaEnvelope } from 'react-icons/fa';
 import { Car, Dealer } from '@/app/services/api';
 
 export interface CarDataPageProps {
@@ -12,68 +12,136 @@ export interface CarDataPageProps {
 const CarDetailsPage: React.FC<CarDataPageProps> = ({ car, dealer }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<'comfort' | 'safety'>('comfort');
-  const [isRunningCostsModalOpen, setIsRunningCostsModalOpen] = useState(false);
+  
+  // For debugging dealer info
+  const [showDebug, setShowDebug] = useState(false);
 
   // Create a formatted title from car data
-  const title = `${car.year || ''} ${car.make || ''} ${car.model || ''}`.trim() || "Car Details";
-  
+  const title = `${car.year || ''} ${car.name || ''} ${car.make || ''} ${car.model || ''}`.trim() || "Car Details";
+
   // Create local dealer image path for Next.js Image compatibility
-  const dealerImagePath = dealer?.profileImage ? 
-    (dealer.profileImage.startsWith("http") ? "/placeholder-image.webp" : dealer.profileImage) 
+  const dealerImagePath = dealer?.profileImage 
+    ? dealer.profileImage 
     : "/placeholder-image.webp";
 
-  // Use actual comfort features from API if available, otherwise use defaults
-  const comfortFeatures = car.comfortFeatures && car.comfortFeatures.length > 0 
+  // Prepare comfort features list from API.
+  const comfortFeatures = (Array.isArray(car.comfortFeatures) && car.comfortFeatures.length > 0)
     ? car.comfortFeatures.map(feature => ({ name: feature, value: true }))
-    : [
-        { name: 'Trimming', value: 'Plastic' },
-        { name: 'Sound System', value: 'Factory Sound system' },
-        { name: 'Seat Material', value: 'Fabric' },
-        { name: 'Air Conditioning', value: 'Dual Zone' },
-        { name: 'Steering Controls', value: true },
-        { name: 'Phone Connectivity', value: true },
-        { name: 'Auto Start And Stop', value: true },
-        { name: 'Infotainment System', value: true },
-        { name: 'Isofix Child Seat Anchors', value: true },
-        { name: 'Fm Radio With Bluetooth Aux And Usb', value: true },
-        { name: 'Keyless Entry And Push Button Start', value: true }
-      ];
+    : [];
 
-  // Use actual safety features from API if available, otherwise use defaults
-  const safetyFeatures = car.safetyFeatures && car.safetyFeatures.length > 0
+  // Prepare safety features list from API.
+  const safetyFeatures = (Array.isArray(car.safetyFeatures) && car.safetyFeatures.length > 0)
     ? car.safetyFeatures.map(feature => ({ name: feature, value: true }))
-    : [
-        { name: 'Srs Air Bags', value: true },
-        { name: 'Lane Assistance', value: true },
-        { name: 'Standard Cruise Control', value: true }
-      ];
+    : [];
+
+  // Format currency
+  const formatPrice = (price: number) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'KSH',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(price);
+  };
+
+  // Format phone number for display
+  const formatPhoneNumber = (phone: string | undefined) => {
+    if (!phone) return '';
+    // Remove any non-digit characters
+    const cleaned = phone.replace(/\D/g, '');
+    // Format based on length
+    if (cleaned.length === 10) {
+      return `(${cleaned.slice(0, 3)}) ${cleaned.slice(3, 6)}-${cleaned.slice(6)}`;
+    }
+    return phone; // Return original if cannot format
+  };
+
+  // Car key specifications
+  const keySpecs = [
+    { label: 'Year', value: car.year },
+    { label: 'Name', value: car.name },
+    { label: 'Make', value: car.make },
+    { label: 'Model', value: car.model },
+    { label: 'Mileage', value: car.mileage ? `${car.mileage.toLocaleString()} km` : 'N/A' },
+    { label: 'Transmission', value: car.transmission || 'N/A' },
+    { label: 'Fuel Type', value: car.fuelType || 'N/A' },
+    { label: 'Body Type', value: car.bodyType || 'N/A' },
+    { label: 'Color', value: car.color || 'N/A' },
+    { label: 'Engine Size', value: car.engineSize || 'N/A' },
+    { label: 'Condition', value: car.condition || 'N/A' },
+  ];
+
+  console.log("Dealer in CarDetailsPage:", dealer);
 
   return (
-    <div className="bg-white text-black relative w-full max-w-xl mx-auto">
+    <div className="bg-white text-black rounded-lg shadow-md w-full max-w-xl mx-auto">
       <div className="container mx-auto px-4 py-8">
-        {/* Car Title and Description */}
+        {/* Car Title and Price */}
         <div className="mb-6">
           <h1 className="text-xl sm:text-2xl font-bold mb-2">{title}</h1>
+          {car.price && (
+            <div className="text-lg sm:text-xl font-bold text-[#25D366]">
+              {formatPrice(car.price)}
+            </div>
+          )}
+          {car.status && (
+            <div className={`inline-block mt-2 px-3 py-1 rounded-full text-sm font-medium ${
+              car.status === 'Available' ? 'bg-green-100 text-green-800' :
+              car.status === 'Sold' ? 'bg-red-100 text-red-800' :
+              'bg-yellow-100 text-yellow-800'
+            }`}>
+              {car.status}
+            </div>
+          )}
         </div>
 
-        {/* Dealer Information */}
-        {dealer && (
-          <div className="flex items-center mb-6 bg-white p-4 rounded-lg">
-            <Link href={`/dealers/${dealer.id || dealer._id}`} className="flex items-center bg-white p-4 rounded-lg hover:bg-gray-100 transition">
-              <div className="relative w-12 h-12 sm:w-16 sm:h-16 mr-4">
-                <Image
-                  src={dealerImagePath}
-                  alt={dealer.name}
-                  fill
-                  className="rounded-full object-contain"
-                />
+        {/* Key Specifications */}
+        <div className="mb-6 bg-gray-50 p-4 rounded-lg">
+          <h2 className="font-semibold text-lg mb-3">Key Specifications</h2>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            {keySpecs.map((spec, index) => (
+              <div key={index} className="flex flex-col">
+                <span className="text-xs text-gray-500">{spec.label}</span>
+                <span className="font-medium">{spec.value}</span>
               </div>
-              <div>
-                <h2 className="font-semibold text-sm sm:text-base">{dealer.name}</h2>
-              </div>
-            </Link>
+            ))}
           </div>
-        )}
+        </div>
+
+        
+        {/* Dealer Information */}
+        <div className="mb-6 bg-white p-4 rounded-lg border border-gray-200">
+          <h2 className="font-semibold text-lg mb-3">Dealer Information</h2>
+          
+          {dealer ? (
+            <>
+              <Link 
+                href={`/dealers/${dealer.id || dealer._id}`} 
+                className="flex items-center hover:bg-gray-50 p-2 rounded-lg transition mb-4"
+              >
+                <div className="relative w-12 h-12 sm:w-16 sm:h-16 mr-4">
+                  <Image
+                    src={dealerImagePath}
+                    alt={dealer.name}
+                    fill
+                    className="rounded-full object-contain"
+                  />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-sm sm:text-base">{dealer.name}</h3>
+                  <p className="text-xs text-gray-500">{dealer.location || 'Location not specified'}</p>
+                </div>
+              </Link>
+              
+             
+            </>
+          ) : (
+            <div className="flex items-center justify-center p-4 text-gray-500">
+              <FaUser className="mr-2" />
+              <span>Dealer information not available</span>
+            </div>
+          )}
+        </div>
 
         {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 mb-6">
@@ -87,8 +155,8 @@ const CarDetailsPage: React.FC<CarDataPageProps> = ({ car, dealer }) => {
                 )
               }
             >
-              <FaWhatsapp className="w-6 h-6" />
-              <span>Enquire via WhatsApp</span>
+              <FaWhatsapp className="w-5 h-5" />
+              <span>WhatsApp</span>
             </button>
           )}
           {dealer?.phone && (
@@ -96,21 +164,21 @@ const CarDetailsPage: React.FC<CarDataPageProps> = ({ car, dealer }) => {
               className="flex-1 bg-white text-black py-3 rounded-lg border border-gray-500 flex items-center hover:bg-gray-100 transition justify-center space-x-2"
               onClick={() => window.open(`tel:${dealer.phone}`)}
             >
-              <FaPhoneAlt className="w-6 h-6" />
-              <span>Call Now</span>
+              <FaPhoneAlt className="w-5 h-5" />
+              <span>Call Dealer</span>
             </button>
           )}
         </div>
 
-        {/* Specifications Accordion-like Sections */}
+        {/* Specifications Button */}
         <div className="w-full space-y-2">
-          <div 
-            className="bg-white rounded-lg w-full"
+          <div
+            className="bg-[#272D3C] text-white rounded-lg w-full hover:bg-[#3a4053] transition"
             onClick={() => setIsModalOpen(true)}
           >
-            <div className="flex justify-between items-center p-4 cursor-pointer transition">
-              <span className="font-semibold text-sm sm:text-base">Specifications</span>
-              <FaArrowRight className="w-6 h-6" />
+            <div className="flex justify-between items-center p-4 cursor-pointer">
+              <span className="font-semibold text-sm sm:text-base">View Features & Specifications</span>
+              <FaArrowRight className="w-5 h-5" />
             </div>
           </div>
 
@@ -126,8 +194,8 @@ const CarDetailsPage: React.FC<CarDataPageProps> = ({ car, dealer }) => {
               {/* Modal Content */}
               <div className="ml-auto w-full max-w-md h-full bg-white text-black shadow-xl relative">
                 {/* Modal Header */}
-                <div className="flex justify-between items-center p-4 border-b border-gray-700">
-                  <h2 className="text-xl font-bold">{title} Specifications</h2>
+                <div className="flex justify-between items-center p-4 border-b border-gray-200">
+                  <h2 className="text-xl font-bold">{title} Features</h2>
                   <button
                     onClick={() => setIsModalOpen(false)}
                     className="text-black hover:text-[#25D366]"
@@ -137,7 +205,7 @@ const CarDetailsPage: React.FC<CarDataPageProps> = ({ car, dealer }) => {
                 </div>
 
                 {/* Tabs */}
-                <div className="flex border-b border-black">
+                <div className="flex border-b border-gray-200">
                   <button
                     className={`w-1/2 py-3 ${activeTab === 'comfort' ? 'bg-[#25D366] text-white' : 'bg-white text-black'}`}
                     onClick={() => setActiveTab('comfort')}
@@ -154,120 +222,44 @@ const CarDetailsPage: React.FC<CarDataPageProps> = ({ car, dealer }) => {
 
                 {/* Feature List */}
                 <div className="p-4 overflow-y-auto max-h-[calc(100vh-200px)]">
-                  {(activeTab === 'comfort' ? comfortFeatures : safetyFeatures).map((feature, index) => (
-                    <div
-                      key={index}
-                      className="flex justify-between items-center py-3 border-b border-gray-700 last:border-b-0"
-                    >
-                      <span className="text-sm">{feature.name}</span>
-                      {feature.value === true ? (
-                        <span className="text-green-500">✓</span>
-                      ) : (
-                        <span className="text-sm text-gray-400">{feature.value || '-'}</span>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Divider */}
-          <div className="h-px bg-black mx-4" />
-
-          <div className="bg-white rounded-lg">
-            <div 
-              className="flex justify-between items-center p-4 cursor-pointer transition"
-              onClick={() => setIsRunningCostsModalOpen(true)}
-            >
-              <span className="font-semibold text-sm sm:text-base">Running Costs</span>
-              <FaArrowRight className="w-6 h-6" />
-            </div>
-          </div>
-
-          {/* Running Costs Modal */}
-          {isRunningCostsModalOpen && (
-            <div className="fixed inset-0 z-50 flex">
-              {/* Overlay */}
-              <div
-                className="fixed inset-0 bg-black opacity-50"
-                onClick={() => setIsRunningCostsModalOpen(false)}
-              ></div>
-
-              {/* Modal Content */}
-              <div className="ml-auto w-full max-w-md h-full bg-white text-black shadow-xl relative">
-                {/* Modal Header */}
-                <div className="flex justify-between items-center p-4 border-b border-black">
-                  <h2 className="text-xl font-bold">Running Costs</h2>
-                  <button
-                    onClick={() => setIsRunningCostsModalOpen(false)}
-                    className="text-black hover:text-[#25D366]"
-                  >
-                    <FaTimes className="w-6 h-6" />
-                  </button>
-                </div>
-
-                {/* Running Costs Content */}
-                <div className="p-4 space-y-6">
-                  {/* Insurance Section */}
-                  <div className="bg-white rounded-lg p-4">
-                    <div className="flex items-center space-x-3 mb-2">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="24"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        className="text-black"
-                      >
-                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                      </svg>
-                      <h3 className="text-lg font-semibold">Insurance</h3>
-                    </div>
-                    <p className="text-sm text-black">(Approximate cost. Amount may change depending on insurer)</p>
-                    <div className="mt-2 text-xl font-bold">KES 22,000 / Annually</div>
-                  </div>
-
-                  {/* Divider */}
-                  <div className="h-px w-full bg-black mx-4" />
-
-                  {/* Fuel Section */}
-                  <div className="bg-white rounded-lg p-4">
-                    <div className="flex items-center space-x-3 mb-2">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="24"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        className="text-black"
-                      >
-                        <path d="M4 4h16v12H4z" />
-                        <path d="M8 20h8" />
-                        <path d="M8 22h8" />
-                        <line x1="12" x2="12" y1="4" y2="20" />
-                      </svg>
-                      <h3 className="text-lg font-semibold">Fuel</h3>
-                    </div>
-                    <div className="space-y-2">
-                      <div className="flex justify-between">
-                        <span className="text-sm text-black">Highway</span>
-                        <span className="font-medium">11 Km/Litre</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-sm text-black">Urban</span>
-                        <span className="font-medium">9 Km/Litre</span>
-                      </div>
-                    </div>
-                  </div>
+                  {activeTab === 'comfort' && (
+                    comfortFeatures.length > 0 ? (
+                      comfortFeatures.map((feature, index) => (
+                        <div
+                          key={index}
+                          className="flex justify-between items-center py-3 border-b border-gray-200 last:border-b-0"
+                        >
+                          <span className="text-sm">{feature.name}</span>
+                          {feature.value === true ? (
+                            <span className="text-green-500">✓</span>
+                          ) : (
+                            <span className="text-sm text-gray-400">{String(feature.value) || '-'}</span>
+                          )}
+                        </div>
+                      ))
+                    ) : (
+                      <p className="text-sm text-gray-500 p-3">Comfort features not specified.</p>
+                    )
+                  )}
+                  {activeTab === 'safety' && (
+                    safetyFeatures.length > 0 ? (
+                      safetyFeatures.map((feature, index) => (
+                        <div
+                          key={index}
+                          className="flex justify-between items-center py-3 border-b border-gray-200 last:border-b-0"
+                        >
+                          <span className="text-sm">{feature.name}</span>
+                          {feature.value === true ? (
+                            <span className="text-green-500">✓</span>
+                          ) : (
+                            <span className="text-sm text-gray-400">{String(feature.value) || '-'}</span>
+                          )}
+                        </div>
+                      ))
+                    ) : (
+                      <p className="text-sm text-gray-500 p-3">Safety features not specified.</p>
+                    )
+                  )}
                 </div>
               </div>
             </div>
